@@ -1,0 +1,80 @@
+[project]
+name = "surge"
+version = "1.0.0"
+description = "SurGe: Improved Surface Geometry in Point Maps"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Karim Knaebel", email = "contact@knaebel.dev" }]
+requires-python = ">=3.12"
+dependencies = [
+  "torch~=2.11.0",           # keep in sync with natten
+  "torchvision",
+  "numpy",
+  "natten>=0.21.5",
+  "utils3d",
+  "opencv-python",
+  "timm>=1.0.15",
+  "einops>=0.8.1",
+  "specbuild>=0.1.0,<0.2.0",
+  "huggingface_hub",
+]
+
+[project.optional-dependencies]
+cli = [
+  "rerun-sdk",
+  "trimesh",
+  "matplotlib",
+  "pyglet<2",
+  "onnxruntime",
+]
+app = [
+  "gradio",
+  "matplotlib",
+  "trimesh",
+  "onnxruntime",
+  "spaces",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3.5"]
+
+[project.scripts]
+surge-cli = "surge.cli:main"
+surge-app = "surge.app:main"
+
+[project.urls]
+Homepage = "https://github.com/karimknaebel/surge"
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+required-environments = [
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+  "sys_platform == 'linux' and platform_machine == 'aarch64'",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[[tool.uv.index]]
+name = "natten"
+url = "https://whl.natten.org/cu130/torch2.11.0/"
+format = "flat"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+utils3d = { git = "https://github.com/EasternJournalist/utils3d", rev = "c5daf6f6c244d251f252102d09e9b7bcef791a38" }
+natten = [{ index = "natten", marker = "sys_platform != 'darwin'" }]
+
+[tool.ruff]
+extend-exclude = ["src/surge/_vendor/dinov2"]
