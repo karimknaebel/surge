@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html data-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="description"
+    content="SurGe improves local surface geometry in monocular point maps with a point map normal metric, a scale-invariant point gradient matching loss, and a Neighborhood Attention Decoder." />
+  <meta name="keywords"
+    content="SurGe, point maps, monocular geometry, 3D reconstruction, surface geometry, Neighborhood Attention, DINOv2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SurGe: Improved Surface Geometry in Point Maps</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%8A%3C/text%3E%3C/svg%3E" />
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+  <link rel="stylesheet" href="./static/css/index.css" />
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-content-width">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">SurGe: Improved Surface Geometry in Point Maps</h1>
+            <div class="title is-4 publication-title">Preprint</div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://karimknaebel.com">Karim Knaebel</a><sup>1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://gonzalomartingarcia.com/">Gonzalo Martin Garcia</a><sup>1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://www.vision.rwth-aachen.de/person/267/">Christian Schmidt</a><sup>1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://www.vision.rwth-aachen.de/person/309/">Ilya Fradlin</a><sup>1</sup>
+              </span>
+              <br />
+              <span class="author-block">
+                <a href="https://nuneslu.github.io/">Lucas Nunes</a><sup>1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://daandegeus.com">Daan de Geus</a><sup>2</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=ZcULDB0AAAAJ">Bastian Leibe</a><sup>1</sup>
+              </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>RWTH Aachen University</span>
+              <span class="author-block"><sup>2</sup>Eindhoven University of Technology</span>
+            </div>
+
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://github.com/karimknaebel/storage/releases/download/surge-assets/surge-v1.pdf"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2605.31577"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/karimknaebel/surge" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fa-brands fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/karimknaebel/surge-large/tree/main"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fa-solid fa-hexagon-nodes"></i></span>
+                  <span>Weights</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/spaces/karimknaebel/surge"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">🤗</span>
+                  <span>Demo</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-content-width">
+      <div class="columns is-centered is-6">
+        <div class="column">
+          <h2 class="title is-3 has-text-centered">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Recent feedforward 3D reconstruction methods predict point maps and estimate global 3D geometry
+              remarkably well. However, their predictions still exhibit inaccurate local surface geometry, which is
+              clearly visible qualitatively but only weakly reflected in common metrics. To make these errors more
+              explicit in evaluation, we introduce a point map normal metric that evaluates the local surface orientation
+              induced by neighboring 3D predictions. To reduce these errors, we propose two complementary components: a point gradient matching loss that
+              supervises depth-normalized 3D finite differences, and a Neighborhood Attention Decoder (NAD) that
+              progressively upsamples features and uses Neighborhood Attention for local feature mixing. Across eight
+              zero-shot monocular geometry benchmarks, SurGe achieves the best average rank for global point map
+              \(\text{AbsRel}\) and consistently improves local point map and point map normal evaluations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-content-width">
+      <h2 class="title is-3 has-text-centered">Architecture</h2>
+      <figure class="paper-figure architecture-figure">
+        <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/architecture.webp"
+          alt="SurGe architecture overview" />
+        <figcaption>
+          <strong>SurGe architecture overview.</strong>
+          SurGe combines a DINOv2 encoder with our Neighborhood Attention Decoder (NAD), which progressively upsamples
+          features with local Neighborhood Attention blocks.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-media-width">
+      <h2 class="title is-3 has-text-centered">Qualitative Results</h2>
+
+      <figure class="paper-figure">
+        <div class="figure-grid figure-grid-image-first">
+          <div>
+            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-image.webp"
+              alt="Input image for point map comparison" />
+            <p>Image</p>
+          </div>
+          <div>
+            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-nad-points.webp"
+              alt="SurGe point map example" />
+            <p>SurGe</p>
+          </div>
+          <div>
+            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-moge2-points.webp"
+              alt="MoGe-2 point map example" />
+            <p>MoGe-2</p>
+          </div>
+          <div>
+            <img
+              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-infinidepth-points.webp"
+              alt="InfiniDepth point map example" />
+            <p>InfiniDepth</p>
+          </div>
+        </div>
+        <figcaption>
+          <strong>Point map comparison.</strong>
+          SurGe predicts cleaner local geometry and preserves thin structures more faithfully than recent monocular
+          point map models.
+        </figcaption>
+      </figure>
+
+      <figure class="paper-figure">
+        <div class="figure-grid figure-grid-image-first">
+          <div>
+            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-image.webp"
+              alt="Input image for point map normal comparison" />
+            <p>Image</p>
+          </div>
+          <div>
+            <img
+              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-nad-point-normals.webp"
+              alt="SurGe point map normals example" />
+            <p>SurGe</p>
+          </div>
+          <div>
+            <img
+              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-moge2-point-normals.webp"
+              alt="MoGe-2 point map normals example" />
+            <p>MoGe-2</p>
+          </div>
+          <div>
+            <img
+              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-infinidepth-point-normals.webp"
+              alt="InfiniDepth point map normals example" />
+            <p>InfiniDepth</p>
+          </div>
+        </div>
+        <figcaption>
+          <strong>Point map normal comparison.</strong>
+          The normal maps show fewer ripples and local surface distortions for SurGe.
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-content-width">
+      <h2 class="title is-3 has-text-centered">Decoder Comparison</h2>
+
+      <figure class="paper-figure">
+        <div class="decoder-comparison">
+          <div class="decoder-comparison-controls">
+            <label for="decoder-select">Compare NAD with</label>
+            <select id="decoder-select" class="decoder-select">
+              <option value="conv-l">ConvStack-L</option>
+              <option value="conv">ConvStack (MoGe-2)</option>
+              <option value="dpt">DPT (VGGT)</option>
+              <option value="vit">ViT (pi^3)</option>
+            </select>
+            <label class="decoder-toggle">
+              <input id="decoder-normal-toggle" type="checkbox" />
+              <span>Normals</span>
+            </label>
+          </div>
+          <div class="image-compare" id="decoder-compare">
+            <img class="image-compare-base"
+              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/decoder-ablation-conv-l-points.webp"
+              alt="ConvStack-L decoder qualitative result" id="decoder-comparison-image" />
+            <div class="image-compare-overlay" id="decoder-overlay">
+              <img
+                src="https://github.com/karimknaebel/storage/releases/download/surge-assets/decoder-ablation-nat-points.webp"
+                alt="NAD decoder qualitative result" id="decoder-nad-image" />
+            </div>
+            <div class="image-compare-label image-compare-label-left">NAD (SurGe)</div>
+            <div class="image-compare-label image-compare-label-right" id="decoder-comparison-label">
+              ConvStack-L
+            </div>
+            <input class="image-compare-slider" id="decoder-slider" type="range" min="0" max="100" value="50"
+              aria-label="Decoder comparison slider" />
+          </div>
+        </div>
+        <figcaption>
+          <strong>Qualitative decoder ablation.</strong>
+          Move the slider to compare our Neighborhood Attention Decoder (NAD) with other common decoder heads trained
+          in the same setup. Parentheses indicate the model that uses the corresponding head style; ConvStack-L is a
+          ConvStack that we scaled up to match the depth and width of our NAD.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="BibTeX">
+    <div class="container is-content-width content">
+      <h2 class="title">BibTeX</h2>
+      <div class="bibtex-wrapper">
+        <pre><code id="bibtex">@article{knaebel2026surge,
+    title   = {{SurGe}: Improved Surface Geometry in Point Maps},
+    author  = {Knaebel, Karim and Martin Garcia, Gonzalo and Schmidt, Christian and Fradlin, Ilya and Nunes, Lucas and de Geus, Daan and Leibe, Bastian},
+    year    = {2026}
+    journal = {arXiv preprint arXiv:2605.31577},
+}</code></pre>
+        <button onclick="copyToClipboard()" class="copy-button" id="bibtex-copy-button">
+          <span>
+            <i class="far fa-copy has-text-grey" id="bibtex-copy-icon"></i>
+            <span id="bibtex-copy-label">Copy</span>
+          </span>
+        </button>
+      </div>
+      <script>
+        const assetBase = "https://github.com/karimknaebel/storage/releases/download/surge-assets/";
+        const assetUrl = (filename) => assetBase + filename;
+
+        const decoderComparisons = {
+          dpt: {
+            label: "DPT (VGGT)",
+            points: assetUrl("decoder-ablation-dpt-points.webp"),
+            normals: assetUrl("decoder-ablation-dpt-point-normals.webp"),
+            alt: "DPT decoder qualitative result"
+          },
+          conv: {
+            label: "ConvStack (MoGe-2)",
+            points: assetUrl("decoder-ablation-conv-points.webp"),
+            normals: assetUrl("decoder-ablation-conv-point-normals.webp"),
+            alt: "ConvStack decoder qualitative result"
+          },
+          "conv-l": {
+            label: "ConvStack-L",
+            points: assetUrl("decoder-ablation-conv-l-points.webp"),
+            normals: assetUrl("decoder-ablation-conv-l-point-normals.webp"),
+            alt: "ConvStack-L decoder qualitative result"
+          },
+          vit: {
+            label: "ViT (\\(\\pi^3\\))",
+            points: assetUrl("decoder-ablation-vit-points.webp"),
+            normals: assetUrl("decoder-ablation-vit-point-normals.webp"),
+            alt: "ViT decoder qualitative result"
+          }
+        };
+
+        function updateDecoderComparison() {
+          const option = decoderComparisons[document.getElementById("decoder-select").value];
+          const mode = document.getElementById("decoder-normal-toggle").checked ? "normals" : "points";
+          const image = document.getElementById("decoder-comparison-image");
+          image.src = option[mode];
+          image.alt = option.alt;
+          document.getElementById("decoder-nad-image").src = assetUrl(
+            "decoder-ablation-nat-" + (mode === "normals" ? "point-normals" : "points") + ".webp"
+          );
+          document.getElementById("decoder-comparison-label").innerHTML = option.label;
+          if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById("decoder-comparison-label")]);
+          }
+        }
+
+        function updateDecoderSlider() {
+          const split = document.getElementById("decoder-slider").value + "%";
+          const compare = document.getElementById("decoder-compare");
+          document.getElementById("decoder-overlay").style.width = split;
+          compare.style.setProperty("--split", split);
+          compare.style.setProperty("--compare-width", compare.clientWidth + "px");
+        }
+
+        document.getElementById("decoder-select").addEventListener("change", updateDecoderComparison);
+        document.getElementById("decoder-normal-toggle").addEventListener("change", updateDecoderComparison);
+        document.getElementById("decoder-slider").addEventListener("input", updateDecoderSlider);
+        window.addEventListener("resize", updateDecoderSlider);
+        updateDecoderComparison();
+        updateDecoderSlider();
+
+        function copyToClipboard() {
+          const codeBlock = document.getElementById("bibtex").innerText;
+          navigator.clipboard.writeText(codeBlock).then(
+            () => {
+              const icon = document.getElementById("bibtex-copy-icon");
+              const label = document.getElementById("bibtex-copy-label");
+              icon.classList.remove("far", "fa-copy", "has-text-grey");
+              icon.classList.add("fas", "fa-check", "has-text-success");
+              label.innerText = "Copied";
+            },
+            (err) => alert("Failed to copy: " + err)
+          );
+        }
+      </script>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>
+              This website is licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. It is based on
+              the <a href="https://nerfies.github.io/">Nerfies website</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
