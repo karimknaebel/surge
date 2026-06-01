@@ -2,6 +2,8 @@
 
 [[`Paper`](https://github.com/karimknaebel/storage/releases/download/surge-assets/surge-v1.pdf)] [[`arXiv`](https://arxiv.org/abs/2605.31577)] [[`Project Page`](http://vision.rwth-aachen.de/surge)] [[`Weights`](https://huggingface.co/karimknaebel/surge-large/tree/main)] [[`Demo`](https://huggingface.co/spaces/karimknaebel/surge)] [[`BibTeX`](#-Citation)]
 
+<table><tr><td><img width="2491" height="1291" alt="architecture" src="https://github.com/user-attachments/assets/aab62446-15ec-478a-92ba-d9fd1c117812" /></td></tr></table>
+
 ## 📢 News
 
 - 2026-06-01: arXiv v1, inference code, weights and demo.
