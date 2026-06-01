@@ -73,19 +73,18 @@ the reconstructed mesh, and download the generated maps and geometry.
 
 ### Output Conventions
 
-`point_map.exr` and `point_normals_map.png` use OpenCV-style camera coordinates,
-also known as RDF: `+X` right, `+Y` down, `+Z` forward. Exported `mesh.glb` and
-`point_cloud.ply` are converted to RUB coordinates: `+X` right, `+Y` up, `+Z`
-backward. This matches the usual right-handed, Y-up camera/view convention where
-the camera looks along `-Z`, so points in front of the camera have negative `Z`.
+Coordinate frames:
 
-`point_map.exr` stores float32 XYZ points. Masked pixels are written as `NaN`.
+- `point_map.exr` and `point_normals_map.png`: RDF (OpenCV); `+X` right, `+Y`
+  down, `+Z` forward.
+- `mesh.glb` and `point_cloud.ply`: RUB; `+X` right, `+Y` up, `+Z` backward.
 
-`point_normals_map.png` stores unit normals in the same RDF coordinates. The
-red channel encodes `X` from `[-1, 1]` to `[0, 255]`; green encodes `-Y`; blue
-encodes `-Z`. Invalid normal pixels are encoded as RGB `[127, 127, 127]`.
-The sign flips make the visualization look like a conventional OpenGL-style
-normal map. Renormalize after decoding if exact unit length is required.
+File formats:
+
+- `point_map.exr`: float32 XYZ points. Masked pixels are `NaN`.
+- `point_normals_map.png`: unit normals. RGB stores `[X, -Y, -Z]` mapped from
+  `[-1, 1]` to `[0, 255]`; invalid pixels are `[127, 127, 127]`. Renormalize
+  after decoding if needed.
 
 ## Neighborhood Attention Decoder (NAD) Module
 
