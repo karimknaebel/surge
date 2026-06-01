@@ -87,12 +87,10 @@ encodes `-Z`. Invalid normal pixels are encoded as RGB `[127, 127, 127]`.
 The sign flips make the visualization look like a conventional OpenGL-style
 normal map. Renormalize after decoding if exact unit length is required.
 
-## NAD Head
+## Neighborhood Attention Decoder (NAD) Module
 
-The [NAD head](src/surge/modules/heads/nad.py) is implemented as a compact,
-reusable PyTorch module. It is intentionally self-contained, so it can be copied
-into another project as a single file and extended without pulling in the rest of
-SurGe.
+The [NAD](src/surge/modules/heads/nad.py) is implemented as a reusable PyTorch module.
+It is intentionally self-contained, so you can be copy it into your project as a single file without pulling in the rest of SurGe.
 
 ## ⚖️ License
 
