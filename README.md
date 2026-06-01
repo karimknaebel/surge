@@ -18,8 +18,8 @@ uv sync --extra cli --extra app
 
 ### Python API
 
-SurGe expects image tensors in `BCHW` format with unnormalized RGB values in
-`[0, 1]`. Do not apply ImageNet normalization or similar preprocessing.
+SurGe expects image tensors in `BCHW` format with unnormalized RGB values in `[0, 1]`.
+Do not apply ImageNet normalization or similar preprocessing.
 
 > [!TIP]
 If you want the exact model from the arXiv v1 paper, you can `git checkout v1` and specify corresponding checkpoint version `SurGe.from_pretrained("karimknaebel/surge-large", revision="v1")`.
@@ -37,8 +37,8 @@ depth = result["depth"]            # (B, H, W)
 intrinsics = result["intrinsics"]  # (B, 3, 3)
 ```
 
-`num_tokens` controls the encoder token budget. Use `"min"`, `"max"`, or an
-integer value.
+`num_tokens` controls the encoder token budget.
+Use `"min"`, `"max"`, or an integer value.
 
 ### CLI
 
@@ -48,17 +48,15 @@ Run inference on an image or a directory of images:
 uv run --extra cli surge-cli path/to/image.jpg --output-dir output
 ```
 
-By default, the CLI writes `mesh.glb` for each input image. Add output flags as
-needed:
+By default, the CLI writes `mesh.glb` for each input image.
+Add output flags as needed:
 
 ```
 uv run --extra cli surge-cli path/to/images --save-maps --save-glb --save-ply
 ```
 
-Useful options include `--max-size 1200`, `--tokens max`, `--fov-x 60`,
-`--fp16`, and `--filter-sky`. For interactive viewing, use `--show-mesh` to
-open the reconstructed mesh with trimesh, or `--rerun` to log the inference
-results to a Rerun viewer.
+Useful options include `--max-size 1200`, `--tokens max`, `--fov-x 60`, `--fp16`, and `--filter-sky`.
+For interactive viewing, use `--show-mesh` to open the reconstructed mesh with trimesh, or `--rerun` to log the inference results to a Rerun viewer.
 
 ### Gradio App
 
@@ -68,23 +66,22 @@ Launch the local demo app:
 uv run --extra app surge-app
 ```
 
-The app lets you upload an image, adjust the token budget and mesh cleanup, view
-the reconstructed mesh, and download the generated maps and geometry.
+The app lets you upload an image, adjust the token budget and mesh cleanup, view the reconstructed mesh, and download the generated maps and geometry.
 
 ### Output Conventions
 
 Coordinate frames:
 
-- `point_map.exr` and `point_normals_map.png`: RDF (OpenCV); `+X` right, `+Y`
-  down, `+Z` forward.
+- `point_map.exr` and `point_normals_map.png`: RDF (OpenCV); `+X` right, `+Y` down, `+Z` forward.
 - `mesh.glb` and `point_cloud.ply`: RUB; `+X` right, `+Y` up, `+Z` backward.
 
 File formats:
 
-- `point_map.exr`: float32 XYZ points. Masked pixels are `NaN`.
-- `point_normals_map.png`: unit normals. RGB stores `[X, -Y, -Z]` mapped from
-  `[-1, 1]` to `[0, 255]`; invalid pixels are `[127, 127, 127]`. Renormalize
-  after decoding if needed.
+- `point_map.exr`: float32 XYZ points.
+  Masked pixels are `NaN`.
+- `point_normals_map.png`: unit normals.
+  RGB stores `[X, -Y, -Z]` mapped from `[-1, 1]` to `[0, 255]`; invalid pixels are `[127, 127, 127]`.
+  Renormalize after decoding if needed.
 
 ## Neighborhood Attention Decoder (NAD) Module
 
