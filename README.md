@@ -103,9 +103,9 @@ If you use our work in your research, please use the following BibTeX entry.
 
 ```
 @article{knaebel2026surge,
-    title   = {{SurGe}: Improved Surface Geometry in Point Maps},
-    author  = {Knaebel, Karim and Martin Garcia, Gonzalo and Schmidt, Christian and Fradlin, Ilya and Nunes, Lucas and de Geus, Daan and Leibe, Bastian},
-    year    = {2026}
-    journal = {arXiv preprint arXiv:2605.31577},
+    title     = {{SurGe}: Improved Surface Geometry in Point Maps},
+    author    = {Knaebel, Karim and Martin Garcia, Gonzalo and Schmidt, Christian and Fradlin, Ilya and Nunes, Lucas and de Geus, Daan and Leibe, Bastian},
+    year      = 2026,
+    journal   = {arXiv preprint arXiv:2605.31577},
 }
 ```
