@@ -35,7 +35,7 @@ class BaseEncoder(nn.Module):
                     kernel_size=1,
                     stride=1,
                     padding=0,
-                )
+                ).to(memory_format=torch.channels_last)
                 if d_out is not None
                 else nn.Identity()
                 for _, d_out in zip(

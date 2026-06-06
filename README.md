@@ -90,7 +90,7 @@ It is intentionally self-contained, so you can be copy it into your project as a
 
 ## ⚖️ License
 
-The **SurGe code** is released under the MIT license, except for the **DINOv2 code** in `src/surge/_vendor/dinov2` which is released by Meta AI under the Apache 2.0 license.
+The **SurGe code** is released under the MIT license.
 The **SurGe weights** are released under CC BY-NC 4.0, due to the training datasets used.
 
 ## 🙏 Acknowledgments

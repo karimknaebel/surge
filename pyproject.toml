@@ -75,6 +75,3 @@ torchvision = [
 ]
 utils3d = { git = "https://github.com/EasternJournalist/utils3d", rev = "c5daf6f6c244d251f252102d09e9b7bcef791a38" }
 natten = [{ index = "natten", marker = "sys_platform != 'darwin'" }]
-
-[tool.ruff]
-extend-exclude = ["src/surge/_vendor/dinov2"]

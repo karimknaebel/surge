@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 
 import torch
+import torch.nn as nn
 from specbuild import REGISTRY
 from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
     checkpoint_wrapper,
@@ -11,7 +12,7 @@ from surge.modules.encoders.base import BaseEncoder
 
 @REGISTRY.register()
 class DINOv3Encoder(BaseEncoder):
-    backbone: torch.nn.Module
+    backbone: nn.Module
     image_mean: torch.Tensor
     image_std: torch.Tensor
 

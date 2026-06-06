@@ -1,18 +1,18 @@
-import importlib
 from contextlib import nullcontext
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
+    checkpoint_wrapper,
+)
 from specbuild import REGISTRY
 
-from surge._vendor.dinov2.models.vision_transformer import DinoVisionTransformer
 from surge.modules.encoders.base import BaseEncoder
 
 
 @REGISTRY.register()
 class DINOv2Encoder(BaseEncoder):
-    backbone: DinoVisionTransformer
+    backbone: nn.Module
     image_mean: torch.Tensor
     image_std: torch.Tensor
 
@@ -23,11 +23,13 @@ class DINOv2Encoder(BaseEncoder):
         frozen: bool = False,
         **kwargs,
     ):
-        hub_loader = getattr(
-            importlib.import_module("surge._vendor.dinov2.hub.backbones"),
+        _backbone = torch.hub.load(
+            "karimknaebel/dinov2-core:v0.1.0",
             backbone,
+            verbose=False,
+            trust_repo=True,
+            pretrained=pretrained,
         )
-        _backbone = hub_loader(pretrained=pretrained)
         super().__init__(
             image_mean=[0.485, 0.456, 0.406],
             image_std=[0.229, 0.224, 0.225],
@@ -35,7 +37,6 @@ class DINOv2Encoder(BaseEncoder):
             **kwargs,
         )
         self.backbone = _backbone
-        self._enable_pytorch_native_sdpa()
 
         self.frozen = frozen
         if self.frozen:
@@ -54,16 +55,11 @@ class DINOv2Encoder(BaseEncoder):
 
     def enable_gradient_checkpointing(self):
         for i in range(len(self.backbone.blocks)):
-            # NOTE: torch.compile doesn't work with this
-            wrap_module_with_gradient_checkpointing(self.backbone.blocks[i])
-
-    def _enable_pytorch_native_sdpa(self):
-        for i in range(len(self.backbone.blocks)):
-            # NOTE: torch.compile (probably) doesn't work with this
-            wrap_dinov2_attention_with_sdpa(self.backbone.blocks[i].attn)
+            self.backbone.blocks[i] = checkpoint_wrapper(self.backbone.blocks[i])
 
     def enable_compile(self):
-        pass
+        for block in self.backbone.blocks:
+            block.compile(dynamic=True)
 
     def forward_backbone(
         self, image: torch.Tensor, intermediate_layers: int | list[int]
@@ -76,43 +72,3 @@ class DINOv2Encoder(BaseEncoder):
                 return_class_token=True,
             )
         return [feat for (feat, cls_token) in features], features[-1][1]
-
-
-# adjusted from https://github.com/microsoft/MoGe/blob/07444410f1e33f402353b99d6ccd26bd31e469e8/moge/model/utils.py#L7-L15
-def wrap_module_with_gradient_checkpointing(module: nn.Module):
-    from torch.utils.checkpoint import checkpoint
-
-    class _CheckpointingWrapper(module.__class__):
-        _restore_cls = module.__class__
-
-        def forward(self, *args, **kwargs):
-            return checkpoint(super().forward, *args, use_reentrant=False, **kwargs)
-
-    module.__class__ = _CheckpointingWrapper
-    return module
-
-
-# adjusted from https://github.com/microsoft/MoGe/blob/07444410f1e33f402353b99d6ccd26bd31e469e8/moge/model/utils.py#L22-L38
-def wrap_dinov2_attention_with_sdpa(module: nn.Module):
-    assert torch.__version__ >= "2.0", "SDPA requires PyTorch 2.0 or later"
-
-    class _AttentionWrapper(module.__class__):
-        def forward(self, x: torch.Tensor, attn_bias=None) -> torch.Tensor:
-            B, N, C = x.shape
-            qkv = (
-                self.qkv(x)
-                .reshape(B, N, 3, self.num_heads, C // self.num_heads)
-                .permute(2, 0, 3, 1, 4)
-            )  # (3, B, H, N, C // H)
-
-            q, k, v = torch.unbind(qkv, 0)  # (B, H, N, C // H)
-
-            x = F.scaled_dot_product_attention(q, k, v, attn_bias)
-            x = x.permute(0, 2, 1, 3).reshape(B, N, C)
-
-            x = self.proj(x)
-            x = self.proj_drop(x)
-            return x
-
-    module.__class__ = _AttentionWrapper
-    return module
