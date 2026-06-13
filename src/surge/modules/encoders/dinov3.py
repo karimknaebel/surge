@@ -53,10 +53,6 @@ class DINOv3Encoder(BaseEncoder):
         for i in range(len(self.backbone.blocks)):
             self.backbone.blocks[i] = checkpoint_wrapper(self.backbone.blocks[i])
 
-    def enable_compile(self):
-        for block in self.backbone.blocks:
-            block.compile(dynamic=True)
-
     def forward_backbone(
         self, image: torch.Tensor, intermediate_layers: int | list[int]
     ):

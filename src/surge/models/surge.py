@@ -40,10 +40,6 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
         self.encoder.enable_gradient_checkpointing()
         self.points_head.enable_gradient_checkpointing()
 
-    def enable_compile(self):
-        self.encoder.enable_compile()
-        self.points_head.enable_compile()
-
     def _remap_points(self, points: torch.Tensor) -> torch.Tensor:
         if self.remap_output == "linear":
             pass

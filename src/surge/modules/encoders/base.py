@@ -62,9 +62,6 @@ class BaseEncoder(nn.Module):
     def enable_gradient_checkpointing(self):
         pass
 
-    def enable_compile(self):
-        pass
-
     def forward_backbone(
         self, image: torch.Tensor, intermediate_layers: int | list[int]
     ):

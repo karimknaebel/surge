@@ -98,9 +98,6 @@ class NAD(nn.Module):
         for stage in self.stages:
             stage.enable_gradient_checkpointing()
 
-    def enable_compile(self):
-        self.compile(dynamic=True)
-
     def forward(self, in_features: list[torch.Tensor]):
         first_feature = next(x for x in in_features if x is not None)
         batch_shape = first_feature.shape[:-3]

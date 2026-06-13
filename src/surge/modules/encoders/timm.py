@@ -39,12 +39,6 @@ class TimmEncoder(BaseEncoder):
     def enable_gradient_checkpointing(self):
         self.backbone.set_grad_checkpointing(True)
 
-    def enable_compile(self):
-        pass
-        # NOTE: at least with the current dynamic res training, compile seems to *slow down* this module
-        # for block in self.backbone.blocks:
-        #     block.compile(dynamic=True)
-
     def forward_backbone(
         self, image: torch.Tensor, intermediate_layers: int | list[int]
     ):
