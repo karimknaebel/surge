@@ -24,7 +24,7 @@ class DINOv2Encoder(BaseEncoder):
         **kwargs,
     ):
         _backbone = torch.hub.load(
-            "karimknaebel/dinov2-core:v0.1.0",
+            "karimknaebel/dinov2-core:v0.1.2",
             backbone,
             verbose=False,
             trust_repo=True,
