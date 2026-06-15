@@ -87,6 +87,69 @@ body {
   margin-bottom: auto;
 }
 
+.rerun-viewer {
+  position: relative;
+  height: min(72vh, 760px);
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  background: #1c1c1c;
+}
+
+.rerun-viewer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rerun-recording-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.rerun-recording-option {
+  display: grid;
+  grid-template-rows: auto 2.4rem;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  background: white;
+  color: #242424;
+  cursor: pointer;
+}
+
+.rerun-recording-option:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.rerun-recording-option.is-active {
+  border-color: hsl(204, 86%, 53%);
+  box-shadow: 0 0 0 2px hsla(204, 86%, 53%, 0.18);
+}
+
+.rerun-recording-option img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.rerun-recording-option span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.15;
+}
+
 .decoder-comparison {
   max-width: 980px;
   margin: 0 auto;
@@ -232,6 +295,10 @@ body {
 }
 
 @media screen and (max-width: 520px) {
+  .rerun-viewer {
+    min-height: 420px;
+  }
+
   .decoder-comparison-controls {
     flex-wrap: wrap;
   }

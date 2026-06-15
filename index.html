@@ -37,7 +37,7 @@
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
-  <link rel="stylesheet" href="./static/css/index.css" />
+  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun" />
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
@@ -207,6 +207,22 @@
   </section>
 
   <section class="section">
+    <div class="container is-media-width">
+      <h2 class="title is-3 has-text-centered">Interactive 3D Results</h2>
+
+      <figure class="paper-figure">
+        <div class="rerun-viewer" id="rerun-viewer"></div>
+        <div class="rerun-recording-picker" id="rerun-recording-picker" aria-label="Rerun recordings"></div>
+        <figcaption>
+          <strong>Rerun viewer.</strong>
+          Explore the selected example interactively in 3D. These are unfiltered raw 3D point predictions; depth is
+          not in metric scale.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="container is-content-width">
       <h2 class="title is-3 has-text-centered">SurGe Architecture</h2>
       <figure class="paper-figure architecture-figure">
@@ -358,6 +374,80 @@
             (err) => alert("Failed to copy: " + err)
           );
         }
+      </script>
+      <script type="module">
+        import { WebViewer } from "https://esm.sh/@rerun-io/web-viewer@0.33.0";
+
+        const rerunAssetBase = "https://raw.githubusercontent.com/karimknaebel/storage/main/surge-assets/rerun/";
+        const rerunRecordings = [
+          { id: "chairs", label: "Chairs" },
+          { id: "umic_building", label: "UMIC Building" },
+          { id: "kitchen", label: "Kitchen" },
+          { id: "maitreya", label: "Maitreya" },
+          { id: "office_chair", label: "Office Chair" },
+          { id: "oranges", label: "Oranges" },
+          { id: "sandwich", label: "Sandwich" },
+          { id: "staircase", label: "Staircase" },
+          { id: "volterra", label: "Volterra" }
+        ].map((recording) => ({
+          ...recording,
+          preview: rerunAssetBase + recording.id + ".jpg",
+          rrd: rerunAssetBase + recording.id + ".rrd"
+        }));
+        let activeRerunRecording = rerunRecordings[0];
+
+        const rerunRecordingPicker = document.getElementById("rerun-recording-picker");
+        for (const recording of rerunRecordings) {
+          const button = document.createElement("button");
+          button.className = "rerun-recording-option";
+          button.type = "button";
+          button.dataset.recording = recording.id;
+          button.disabled = true;
+          button.innerHTML = `
+            <img src="${recording.preview}" alt="" loading="lazy" />
+            <span>${recording.label}</span>
+          `;
+          button.addEventListener("click", () => {
+            if (recording === activeRerunRecording) {
+              return;
+            }
+            rerunViewer.close(activeRerunRecording.rrd);
+            rerunViewer.open(recording.rrd);
+            activeRerunRecording = recording;
+            updateRerunRecordingPicker();
+          });
+          rerunRecordingPicker.append(button);
+        }
+
+        function updateRerunRecordingPicker() {
+          for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
+            const isActive = button.dataset.recording === activeRerunRecording.id;
+            button.classList.toggle("is-active", isActive);
+            button.setAttribute("aria-pressed", isActive);
+          }
+        }
+
+        const rerunViewer = new WebViewer();
+        await rerunViewer.start(
+          activeRerunRecording.rrd,
+          document.getElementById("rerun-viewer"),
+          {
+            allow_fullscreen: true,
+            hide_welcome_screen: true,
+            height: "",
+            panel_state_overrides: {
+              blueprint: "Hidden",
+              selection: "Hidden",
+              time: "Hidden"
+            },
+            theme: "light",
+            width: ""
+          }
+        );
+        for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
+          button.disabled = false;
+        }
+        updateRerunRecordingPicker();
       </script>
     </div>
   </section>
