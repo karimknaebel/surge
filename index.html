@@ -37,7 +37,7 @@
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
-  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun" />
+  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun-autoload" />
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
@@ -427,8 +427,15 @@
           }
         }
 
+        function preventFocusScroll(element) {
+          const focus = element.focus.bind(element);
+          element.focus = (options) => {
+            focus({ ...(typeof options === "object" ? options : {}), preventScroll: true });
+          };
+        }
+
         const rerunViewer = new WebViewer();
-        await rerunViewer.start(
+        const rerunStart = rerunViewer.start(
           activeRerunRecording.rrd,
           document.getElementById("rerun-viewer"),
           {
@@ -444,6 +451,8 @@
             width: ""
           }
         );
+        preventFocusScroll(rerunViewer.canvas);
+        await rerunStart;
         for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
           button.disabled = false;
         }
