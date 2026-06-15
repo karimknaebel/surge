@@ -37,7 +37,7 @@
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
-  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun-autoload" />
+  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun-no-default" />
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
@@ -211,7 +211,9 @@
       <h2 class="title is-3 has-text-centered">Interactive 3D Results</h2>
 
       <figure class="paper-figure">
-        <div class="rerun-viewer" id="rerun-viewer"></div>
+        <div class="rerun-viewer" id="rerun-viewer">
+          <div class="rerun-viewer-placeholder">Select an example below to load the interactive 3D viewer.</div>
+        </div>
         <div class="rerun-recording-picker" id="rerun-recording-picker" aria-label="Rerun recordings"></div>
         <figcaption>
           <strong>Rerun viewer.</strong>
@@ -394,68 +396,72 @@
           preview: rerunAssetBase + recording.id + ".jpg",
           rrd: rerunAssetBase + recording.id + ".rrd"
         }));
-        let activeRerunRecording = rerunRecordings[0];
+        let activeRerunRecording = null;
+        let openedRerunRecording = null;
+        let rerunViewer = null;
+        let rerunViewerStart = null;
 
+        const rerunViewerElement = document.getElementById("rerun-viewer");
         const rerunRecordingPicker = document.getElementById("rerun-recording-picker");
         for (const recording of rerunRecordings) {
           const button = document.createElement("button");
           button.className = "rerun-recording-option";
           button.type = "button";
           button.dataset.recording = recording.id;
-          button.disabled = true;
           button.innerHTML = `
             <img src="${recording.preview}" alt="" loading="lazy" />
             <span>${recording.label}</span>
           `;
-          button.addEventListener("click", () => {
+          button.addEventListener("click", async () => {
             if (recording === activeRerunRecording) {
               return;
             }
-            rerunViewer.close(activeRerunRecording.rrd);
-            rerunViewer.open(recording.rrd);
             activeRerunRecording = recording;
             updateRerunRecordingPicker();
+            await ensureRerunViewer();
+            if (recording !== activeRerunRecording) {
+              return;
+            }
+            if (openedRerunRecording) {
+              rerunViewer.close(openedRerunRecording.rrd);
+            }
+            rerunViewer.open(recording.rrd);
+            openedRerunRecording = recording;
           });
           rerunRecordingPicker.append(button);
         }
 
         function updateRerunRecordingPicker() {
           for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
-            const isActive = button.dataset.recording === activeRerunRecording.id;
+            const isActive = button.dataset.recording === activeRerunRecording?.id;
             button.classList.toggle("is-active", isActive);
             button.setAttribute("aria-pressed", isActive);
           }
         }
 
-        function preventFocusScroll(element) {
-          const focus = element.focus.bind(element);
-          element.focus = (options) => {
-            focus({ ...(typeof options === "object" ? options : {}), preventScroll: true });
-          };
+        function ensureRerunViewer() {
+          if (!rerunViewerStart) {
+            rerunViewer = new WebViewer();
+            rerunViewerStart = rerunViewer.start(
+              null,
+              rerunViewerElement,
+              {
+                allow_fullscreen: true,
+                hide_welcome_screen: true,
+                height: "",
+                panel_state_overrides: {
+                  blueprint: "Hidden",
+                  selection: "Hidden",
+                  time: "Hidden"
+                },
+                theme: "light",
+                width: ""
+              }
+            );
+          }
+          return rerunViewerStart;
         }
 
-        const rerunViewer = new WebViewer();
-        const rerunStart = rerunViewer.start(
-          activeRerunRecording.rrd,
-          document.getElementById("rerun-viewer"),
-          {
-            allow_fullscreen: true,
-            hide_welcome_screen: true,
-            height: "",
-            panel_state_overrides: {
-              blueprint: "Hidden",
-              selection: "Hidden",
-              time: "Hidden"
-            },
-            theme: "light",
-            width: ""
-          }
-        );
-        preventFocusScroll(rerunViewer.canvas);
-        await rerunStart;
-        for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
-          button.disabled = false;
-        }
         updateRerunRecordingPicker();
       </script>
     </div>
