@@ -90,7 +90,7 @@ def save_maps(save_path: Path, result: dict[str, np.ndarray]) -> None:
         ),
     )
 
-    fov_x, fov_y = utils3d.numpy.intrinsics_to_fov(result["intrinsics"])
+    fov_x, fov_y = utils3d.np.intrinsics_to_fov(result["intrinsics"])
     (save_path / "fov.json").write_text(
         json.dumps(
             {

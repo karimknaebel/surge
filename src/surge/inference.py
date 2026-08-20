@@ -65,7 +65,7 @@ def postprocess_output(
         points = points / scale
         depth = depth / scale
 
-    normal, normal_mask = utils3d.numpy.points_to_normals(points, mask=mask)
+    normal, normal_mask = utils3d.np.point_map_to_normal_map(points, mask=mask)
     return {
         "image": image,
         "points": points,
@@ -116,10 +116,10 @@ def build_mesh(
         )
 
     faces, vertices, vertex_colors, vertex_uvs, vertex_normals = (
-        utils3d.numpy.image_mesh(
+        utils3d.np.build_mesh_from_map(
             result["points"],
             image.astype(np.float32) / 255.0,
-            utils3d.numpy.image_uv(width=width, height=height),
+            utils3d.np.uv_map(height, width),
             result["normal"],
             mask=mask,
             tri=True,

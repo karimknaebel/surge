@@ -168,13 +168,13 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
                 focal / 2 * (1 + aspect_ratio**2) ** 0.5 / aspect_ratio,
                 focal / 2 * (1 + aspect_ratio**2) ** 0.5,
             )
-            intrinsics = utils3d.torch.intrinsics_from_focal_center(fx, fy, 0.5, 0.5)
+            intrinsics = utils3d.pt.intrinsics_from_focal_center(fx, fy, 0.5, 0.5)
             points[..., 2] += shift[..., None, None]
             depth = points[..., 2].clone()
 
             # If projection constraint is forced, recompute the point map using the actual depth map & intrinsics
             if force_projection:
-                points = utils3d.torch.depth_to_points(
+                points = utils3d.pt.depth_map_to_point_map(
                     depth.double(),
                     intrinsics=intrinsics.double(),
                 ).to(points.dtype)

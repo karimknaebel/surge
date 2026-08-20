@@ -66,10 +66,10 @@ def depth_occlusion_edge_numpy(
     disp_pad = np.pad(disp, (thickness, thickness), constant_values=0)
     mask_pad = np.pad(mask, (thickness, thickness), constant_values=False)
     kernel_size = 2 * thickness + 1
-    disp_window = utils3d.numpy.sliding_window_2d(
+    disp_window = utils3d.np.sliding_window(
         disp_pad, (kernel_size, kernel_size), 1, axis=(-2, -1)
     )  # [..., H, W, kernel_size ** 2]
-    mask_window = utils3d.numpy.sliding_window_2d(
+    mask_window = utils3d.np.sliding_window(
         mask_pad, (kernel_size, kernel_size), 1, axis=(-2, -1)
     )  # [..., H, W, kernel_size ** 2]
 
