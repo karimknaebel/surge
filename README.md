@@ -6,13 +6,36 @@
 
 ## 📢 News
 
-- 2026-06-01: arXiv v1, inference code, weights and demo.
+- 2026-06-01: arXiv v1, inference code, weights, and demo released.
 
 ## Installation
 
+### From a local clone
+
+Clone the repository:
+
+```bash
+git clone https://github.com/karimknaebel/surge
+cd surge
 ```
-uv sync --extra cli --extra app
+
+Then install SurGe with the CLI and Gradio app dependencies:
+
+```bash
+uv sync --all-extras
 ```
+
+Alternatively, with pip: `pip install -e ".[cli,app]"`
+
+### As a library
+
+Use SurGe in an existing project:
+
+```bash
+uv add git+https://github.com/karimknaebel/surge
+```
+
+Alternatively, with pip: `pip install git+https://github.com/karimknaebel/surge`
 
 ## Usage
 
@@ -20,9 +43,6 @@ uv sync --extra cli --extra app
 
 SurGe expects image tensors in `BCHW` format with unnormalized RGB values in `[0, 1]`.
 Do not apply ImageNet normalization or similar preprocessing.
-
-> [!TIP]
-If you want the exact model from the arXiv v1 paper, you can `git checkout v1` and specify corresponding checkpoint version `SurGe.from_pretrained("karimknaebel/surge-large", revision="v1")`.
 
 ```python
 import torch
@@ -37,22 +57,21 @@ depth = result["depth"]            # (B, H, W)
 intrinsics = result["intrinsics"]  # (B, 3, 3)
 ```
 
-`num_tokens` controls the encoder token budget.
-Use `"min"`, `"max"`, or an integer value.
+`num_tokens` controls the encoder token budget and accepts `"min"`, `"max"`, or an integer.
 
 ### CLI
 
 Run inference on an image or a directory of images:
 
 ```
-uv run --extra cli surge-cli path/to/image.jpg --output-dir output
+uv run surge-cli path/to/image.jpg --output-dir output
 ```
 
 By default, the CLI writes `mesh.glb` for each input image.
 Add output flags as needed:
 
 ```
-uv run --extra cli surge-cli path/to/images --save-maps --save-glb --save-ply
+uv run surge-cli path/to/images --save-maps --save-glb --save-ply
 ```
 
 Useful options include `--max-size 1200`, `--tokens max`, `--fov-x 60`, `--fp16`, and `--filter-sky`.
@@ -63,10 +82,10 @@ For interactive viewing, use `--show-mesh` to open the reconstructed mesh with t
 Launch the local demo app:
 
 ```
-uv run --extra app surge-app
+uv run surge-app
 ```
 
-The app lets you upload an image, adjust the token budget and mesh cleanup, view the reconstructed mesh, and download the generated maps and geometry.
+The app lets you upload an image, adjust the token budget and mesh cleanup settings, view the reconstructed mesh, and download the generated maps and geometry.
 
 ### Output Conventions
 
@@ -86,7 +105,7 @@ File formats:
 ## Neighborhood Attention Decoder (NAD) Module
 
 The [NAD](src/surge/modules/heads/nad.py) is implemented as a reusable PyTorch module.
-It is intentionally self-contained, so you can be copy it into your project as a single file without pulling in the rest of SurGe.
+It is intentionally self-contained, so you can copy it into your project as a single file without pulling in the rest of SurGe.
 
 ## ⚖️ License
 
