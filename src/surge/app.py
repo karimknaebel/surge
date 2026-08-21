@@ -241,8 +241,8 @@ def run_inference(
     color_point_cloud_path = output_dir / "point_cloud.ply"
     point_map_path = output_dir / "point_map.exr"
     image_path = output_dir / "image.png"
-    depth_map_path = output_dir / "depth_map_colorized.png"
-    point_normals_map_path = output_dir / "point_normals_map.png"
+    depth_colorized_path = output_dir / "depth_colorized.png"
+    point_normal_map_path = output_dir / "point_normal_map.png"
 
     save_glb(mesh_path, vertices, faces, vertex_uvs, result["image"], vertex_normals)
     save_ply(
@@ -255,21 +255,21 @@ def run_inference(
     _save_points_exr(point_map_path, result["points"], result["mask"])
 
     depth = surge.utils.vis.colorize_depth(result["depth"], result["mask"])
-    point_normals_map = surge.utils.vis.colorize_normal(
+    point_normal_map = surge.utils.vis.colorize_normal(
         result["normal"],
         result["mask"] & result["normal_mask"],
     )
     _save_png(image_path, result["image"])
-    _save_png(depth_map_path, depth)
-    _save_png(point_normals_map_path, point_normals_map)
+    _save_png(depth_colorized_path, depth)
+    _save_png(point_normal_map_path, point_normal_map)
     return (
         str(mesh_path),
         str(mesh_path),
         str(color_point_cloud_path),
         str(point_map_path),
         str(image_path),
-        str(depth_map_path),
-        str(point_normals_map_path),
+        str(depth_colorized_path),
+        str(point_normal_map_path),
     )
 
 
@@ -329,12 +329,12 @@ with gr.Blocks(title="SurGe") as demo:
                 elem_id="mesh-viewer",
             )
             with gr.Row():
-                depth_map_preview = gr.Image(
-                    label="Depth map (colorized)",
+                depth_colorized_preview = gr.Image(
+                    label="Colorized depth",
                     type="filepath",
                 )
-                point_normals_map_preview = gr.Image(
-                    label="Point normals map",
+                point_normal_map_preview = gr.Image(
+                    label="Point normal map",
                     type="filepath",
                 )
             gr.Markdown("### Downloads")
@@ -361,8 +361,8 @@ with gr.Blocks(title="SurGe") as demo:
             point_cloud_download,
             point_map_download,
             image_download,
-            depth_map_preview,
-            point_normals_map_preview,
+            depth_colorized_preview,
+            point_normal_map_preview,
         ],
         fn=run_inference,
         cache_examples=True,
@@ -388,8 +388,8 @@ with gr.Blocks(title="SurGe") as demo:
             point_cloud_download,
             point_map_download,
             image_download,
-            depth_map_preview,
-            point_normals_map_preview,
+            depth_colorized_preview,
+            point_normal_map_preview,
         ],
     )
 

@@ -93,16 +93,19 @@ The app lets you upload an image, adjust the token budget and mesh cleanup setti
 
 Coordinate frames:
 
-- `point_map.exr` and `point_normals_map.png`: RDF (OpenCV); `+X` right, `+Y` down, `+Z` forward.
+- `point_map.exr` and `point_normal_map.png`: RDF (OpenCV); `+X` right, `+Y` down, `+Z` forward.
 - `mesh.glb` and `point_cloud.ply`: RUB; `+X` right, `+Y` up, `+Z` backward.
 
 File formats:
 
+- `depth_colorized.png`: colorized depth visualization.
 - `point_map.exr`: float32 XYZ points.
   Masked pixels are `NaN`.
-- `point_normals_map.png`: unit normals.
+- `point_normal_map.png`: unit normals.
   RGB stores `[X, -Y, -Z]` mapped from `[-1, 1]` to `[0, 255]`; invalid pixels are `[127, 127, 127]`.
   Renormalize after decoding if needed.
+- `intrinsics.json`: camera intrinsics as a 3×3 JSON array.
+- `fov.json`: horizontal and vertical fields of view in degrees.
 
 ## Neighborhood Attention Decoder (NAD) Module
 

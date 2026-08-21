@@ -71,7 +71,7 @@ def save_maps(save_path: Path, result: dict[str, np.ndarray]) -> None:
 
     cv2.imwrite(str(save_path / "image.png"), cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
     cv2.imwrite(
-        str(save_path / "depth_map_colorized.png"),
+        str(save_path / "depth_colorized.png"),
         cv2.cvtColor(surge.utils.vis.colorize_depth(depth, mask), cv2.COLOR_RGB2BGR),
     )
     cv2.imwrite(
@@ -83,13 +83,16 @@ def save_maps(save_path: Path, result: dict[str, np.ndarray]) -> None:
         [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT],
     )
     cv2.imwrite(
-        str(save_path / "point_normals_map.png"),
+        str(save_path / "point_normal_map.png"),
         cv2.cvtColor(
             surge.utils.vis.colorize_normal(normal, normal_mask),
             cv2.COLOR_RGB2BGR,
         ),
     )
 
+    (save_path / "intrinsics.json").write_text(
+        json.dumps(result["intrinsics"].tolist()) + "\n"
+    )
     fov_x, fov_y = utils3d.np.intrinsics_to_fov(result["intrinsics"])
     (save_path / "fov.json").write_text(
         json.dumps(
@@ -240,7 +243,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--save-maps",
         action="store_true",
-        help="Save image/depth/points/normal/fov maps.",
+        help="Save image, depth, point, normal, and camera metadata outputs.",
     )
     parser.add_argument(
         "--save-glb",
