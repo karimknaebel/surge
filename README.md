@@ -51,13 +51,12 @@ from surge import SurGe
 model = SurGe.from_pretrained("karimknaebel/surge-large").eval().cuda()
 image = torch.rand(1, 3, 518, 518, device="cuda")
 
-result = model.infer(image, num_tokens="max")
+with torch.autocast("cuda", dtype=torch.float16):
+    result = model.infer(image)
 points = result["points"]          # (B, H, W, 3)
 depth = result["depth"]            # (B, H, W)
 intrinsics = result["intrinsics"]  # (B, 3, 3)
 ```
-
-`num_tokens` controls the encoder token budget and accepts `"min"`, `"max"`, or an integer.
 
 ### CLI
 
