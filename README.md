@@ -25,6 +25,9 @@ Then install SurGe with the CLI and Gradio app dependencies:
 uv sync --all-extras
 ```
 
+This creates a virtual environment in `.venv/`.
+Run commands with `uv run` (e.g., `uv run surge-cli ...`), or just activate it as usual with `source .venv/bin/activate`.
+
 Alternatively, with pip: `pip install -e ".[cli,app]"`
 
 ### As a library
