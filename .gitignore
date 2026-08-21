@@ -405,3 +405,6 @@ FodyWeavers.xsd
 /.gradio/
 /example_images
 /output
+/eval_output/*
+!/eval_output/surge-large.d9de0808.json
+/data

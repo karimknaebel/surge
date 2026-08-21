@@ -1,0 +1,73 @@
+{
+  "NYUv2": {
+    "path": "NYUv2",
+    "width": 640,
+    "height": 480,
+    "depth_unit": 1.0
+  },
+  "KITTI": {
+    "path": "KITTI",
+    "width": 750,
+    "height": 375,
+    "depth_unit": 1.0
+  },
+  "ETH3D": {
+    "path": "ETH3D",
+    "width": 2048,
+    "height": 1365,
+    "depth_unit": 1.0,
+    "segmentation": "segmentation.png",
+    "has_clean_normal": true
+  },
+  "iBims-1": {
+    "path": "iBims-1",
+    "width": 640,
+    "height": 480,
+    "depth_unit": 1.0,
+    "segmentation": "segmentation.png",
+    "has_sharp_boundary": true,
+    "has_clean_normal": true
+  },
+  "GSO": {
+    "path": "GSO",
+    "width": 512,
+    "height": 512,
+    "has_clean_normal": true
+  },
+  "Sintel": {
+    "path": "Sintel",
+    "width": 872,
+    "height": 436,
+    "segmentation": "segmentation.png",
+    "has_sharp_boundary": true,
+    "has_clean_normal": true
+  },
+  "DDAD": {
+    "path": "DDAD",
+    "width": 1400,
+    "height": 700,
+    "depth_unit": 1.0,
+    "segmentation": "segmentation.png"
+  },
+  "DIODE": {
+    "path": "DIODE",
+    "width": 1024,
+    "height": 768,
+    "depth_unit": 1.0,
+    "segmentation": "segmentation.png",
+    "has_clean_normal": true
+  },
+  "Spring": {
+    "path": "Spring",
+    "width": 1920,
+    "height": 1080,
+    "has_sharp_boundary": true
+  },
+  "HAMMER": {
+    "path": "HAMMER",
+    "width": 1664,
+    "height": 832,
+    "depth_unit": 1.0,
+    "has_sharp_boundary": true
+  }
+}

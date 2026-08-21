@@ -6,6 +6,7 @@
 
 ## 📢 News
 
+- 2026-08-21: evaluation code released.
 - 2026-06-01: arXiv v1, inference code, weights, and demo released.
 
 ## Installation
@@ -19,7 +20,7 @@ git clone https://github.com/karimknaebel/surge
 cd surge
 ```
 
-Then install SurGe with the CLI and Gradio app dependencies:
+Then install SurGe with the CLI, Gradio app, and evaluation dependencies:
 
 ```bash
 uv sync --all-extras
@@ -28,7 +29,7 @@ uv sync --all-extras
 This creates a virtual environment in `.venv/`.
 Run commands with `uv run` (e.g., `uv run surge-cli ...`), or just activate it as usual with `source .venv/bin/activate`.
 
-Alternatively, with pip: `pip install -e ".[cli,app]"`
+Alternatively, with pip: `pip install -e ".[cli,app,eval]"`
 
 ### As a library
 
@@ -88,6 +89,29 @@ uv run surge-app
 ```
 
 The app lets you upload an image, adjust the token budget and mesh cleanup settings, view the reconstructed mesh, and download the generated maps and geometry.
+
+### Evaluation
+
+Download MoGe's processed evaluation datasets from [Hugging Face](https://huggingface.co/datasets/Ruicheng/monocular-geometry-evaluation) and extract them under `data/eval`:
+
+```bash
+mkdir -p data/eval
+uv run hf download Ruicheng/monocular-geometry-evaluation \
+  --repo-type dataset \
+  --local-dir data/eval
+
+cd data/eval
+unzip '*.zip'
+cd ../..
+```
+
+Run the full suite:
+
+```bash
+uv run surge-eval --output eval_output/surge.json
+```
+
+We include [official surge-large results](eval_output/surge-large.d9de0808.json) for reference.
 
 ### Output Conventions
 

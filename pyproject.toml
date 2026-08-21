@@ -34,6 +34,10 @@ app = [
   "onnxruntime",
   "spaces",
 ]
+eval = [
+  "moge @ git+https://github.com/microsoft/MoGe.git@74fbce054ebed49800de42d0ad0e83495065719a",
+  "tqdm",
+]
 
 [dependency-groups]
 dev = ["pytest>=8.3.5"]
@@ -41,6 +45,7 @@ dev = ["pytest>=8.3.5"]
 [project.scripts]
 surge-cli = "surge.cli:main"
 surge-app = "surge.app:main"
+surge-eval = "surge.evaluation.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/karimknaebel/surge"
@@ -50,6 +55,9 @@ requires = ["uv_build>=0.11.3,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.uv]
+exclude-dependencies = [
+  { package = { name = "moge" }, dependencies = ["flex-gemm", "torch", "torchvision"] },
+]
 required-environments = [
   "sys_platform == 'linux' and platform_machine == 'x86_64'",
   "sys_platform == 'linux' and platform_machine == 'aarch64'",
