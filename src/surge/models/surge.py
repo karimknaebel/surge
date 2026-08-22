@@ -13,8 +13,8 @@ from einops import rearrange
 from huggingface_hub import PyTorchModelHubMixin
 from specbuild import build
 
-from surge.modules.encoders.base import BaseEncoder
-from surge.modules.heads.nad import NAD
+from surge.models.modules.encoders.base import BaseEncoder
+from surge.models.modules.heads.nad import NAD
 from surge.utils.geometry_torch import normalized_view_plane_uv, recover_focal_shift
 
 

@@ -7,7 +7,7 @@ from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
     checkpoint_wrapper,
 )
 
-from surge.modules.encoders.base import BaseEncoder
+from surge.models.modules.encoders.base import BaseEncoder
 
 
 @REGISTRY.register()

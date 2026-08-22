@@ -27,7 +27,7 @@ uv sync --all-extras
 ```
 
 This creates a virtual environment in `.venv/`.
-Run commands with `uv run` (e.g., `uv run surge-cli ...`), or just activate it as usual with `source .venv/bin/activate`.
+Run commands with `uv run` (e.g., `uv run surge-infer ...`), or just activate it as usual with `source .venv/bin/activate`.
 
 Alternatively, with pip: `pip install -e ".[cli,app,eval]"`
 
@@ -67,14 +67,14 @@ intrinsics = result["intrinsics"]  # (B, 3, 3)
 Run inference on an image or a directory of images:
 
 ```
-uv run surge-cli path/to/image.jpg --output-dir output
+uv run surge-infer path/to/image.jpg --output-dir output
 ```
 
 By default, the CLI writes `mesh.glb` for each input image.
 Add output flags as needed:
 
 ```
-uv run surge-cli path/to/images --save-maps --save-glb --save-ply
+uv run surge-infer path/to/images --save-maps --save-glb --save-ply
 ```
 
 Useful options include `--max-size 1200`, `--tokens max`, `--fov-x 60`, `--fp16`, and `--filter-sky`.
@@ -133,7 +133,7 @@ File formats:
 
 ## Neighborhood Attention Decoder (NAD) Module
 
-The [NAD](src/surge/modules/heads/nad.py) is implemented as a reusable PyTorch module.
+The [NAD](src/surge/models/modules/heads/nad.py) is implemented as a reusable PyTorch module.
 It is intentionally self-contained, so you can copy it into your project as a single file without pulling in the rest of SurGe.
 
 ## Point Gradient Matching ($\mathcal{L}_{\mathrm{pgm}}$)

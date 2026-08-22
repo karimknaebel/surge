@@ -3,7 +3,7 @@ import torch
 from specbuild import REGISTRY
 from timm.models.vision_transformer import VisionTransformer
 
-from surge.modules.encoders.base import BaseEncoder
+from surge.models.modules.encoders.base import BaseEncoder
 
 
 @REGISTRY.register()

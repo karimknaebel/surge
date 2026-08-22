@@ -26,6 +26,7 @@ cli = [
   "matplotlib",
   "pyglet<2",
   "onnxruntime",
+  "tqdm",
 ]
 app = [
   "gradio",
@@ -43,7 +44,7 @@ eval = [
 dev = ["pytest>=8.3.5"]
 
 [project.scripts]
-surge-cli = "surge.cli:main"
+surge-infer = "surge.cli:main"
 surge-app = "surge.app:main"
 surge-eval = "surge.evaluation.cli:main"
 
