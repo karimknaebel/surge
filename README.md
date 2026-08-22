@@ -136,6 +136,14 @@ File formats:
 The [NAD](src/surge/modules/heads/nad.py) is implemented as a reusable PyTorch module.
 It is intentionally self-contained, so you can copy it into your project as a single file without pulling in the rest of SurGe.
 
+## Point Gradient Matching ($\mathcal{L}_{\mathrm{pgm}}$)
+
+The self-contained [point gradient matching loss](src/surge/losses.py) used to train SurGe is included for reference.
+
+## Point Map Normal Mean Angular Error ($\mathrm{MAE}_{\mathrm{normal}}$)
+
+The [normal mean angular error metric](src/surge/evaluation/metrics.py#L122-L132) used to evaluate surface normals is included in the evaluation code.
+
 ## ⚖️ License
 
 The **SurGe code** is released under the MIT license.
