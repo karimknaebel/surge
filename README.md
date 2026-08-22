@@ -62,7 +62,7 @@ depth = result["depth"]            # (B, H, W)
 intrinsics = result["intrinsics"]  # (B, 3, 3)
 ```
 
-### Inference CLI
+### 🚀 Inference CLI
 
 Run inference on an image or a directory of images:
 
@@ -80,7 +80,7 @@ uv run surge-infer path/to/images --save-maps --save-glb --save-ply
 Useful options include `--max-size 1200`, `--tokens max`, `--fov-x 60`, `--fp16`, and `--filter-sky`.
 For interactive viewing, use `--show-mesh` to open the reconstructed mesh with trimesh, or `--rerun` to log the inference results to a Rerun viewer.
 
-### Gradio App
+### 🖥️ Gradio App
 
 Launch the local demo app:
 
@@ -90,7 +90,7 @@ uv run surge-app
 
 The app lets you upload an image, adjust the token budget and mesh cleanup settings, view the reconstructed mesh, and download the generated maps and geometry.
 
-### Evaluation
+### 📊 Evaluation
 
 Download MoGe's processed evaluation datasets from [Hugging Face](https://huggingface.co/datasets/Ruicheng/monocular-geometry-evaluation) and extract them under `data/eval`:
 
@@ -131,16 +131,16 @@ File formats:
 - `intrinsics.json`: camera intrinsics as a 3×3 JSON array.
 - `fov.json`: horizontal and vertical fields of view in degrees.
 
-## Neighborhood Attention Decoder (NAD) Module
+## 🧩 Neighborhood Attention Decoder (NAD) Module
 
 The [NAD](src/surge/models/modules/heads/nad.py) is implemented as a reusable PyTorch module.
 It is intentionally self-contained, so you can copy it into your project as a single file without pulling in the rest of SurGe.
 
-## Point Gradient Matching ($\mathcal{L}_{\mathrm{pgm}}$)
+## 🧩 Point Gradient Matching ($\mathcal{L}_{\mathrm{pgm}}$)
 
 The self-contained [point gradient matching loss](src/surge/losses.py) used to train SurGe is included for reference.
 
-## Point Map Normal Mean Angular Error ($\mathrm{MAE}_{\mathrm{normal}}$)
+## 🧩 Point Map Normal Mean Angular Error ($\mathrm{MAE}_{\mathrm{normal}}$)
 
 The [normal mean angular error metric](src/surge/evaluation/metrics.py#L122-L132) used to evaluate surface normals is included in the evaluation code.
 
