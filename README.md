@@ -20,7 +20,7 @@ git clone https://github.com/karimknaebel/surge
 cd surge
 ```
 
-Then install SurGe with the CLI, Gradio app, and evaluation dependencies:
+Then install SurGe with the Inference CLI, Gradio app, and evaluation dependencies:
 
 ```bash
 uv sync --all-extras
@@ -62,7 +62,7 @@ depth = result["depth"]            # (B, H, W)
 intrinsics = result["intrinsics"]  # (B, 3, 3)
 ```
 
-### CLI
+### Inference CLI
 
 Run inference on an image or a directory of images:
 
@@ -70,7 +70,7 @@ Run inference on an image or a directory of images:
 uv run surge-infer path/to/image.jpg --output-dir output
 ```
 
-By default, the CLI writes `mesh.glb` for each input image.
+By default, the Inference CLI writes `mesh.glb` for each input image.
 Add output flags as needed:
 
 ```
