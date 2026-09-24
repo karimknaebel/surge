@@ -6,7 +6,8 @@
 
 ## 📢 News
 
-- 2026-08-21: evaluation code released.
+- 2026-09-25: Accepted to [NeurIPS 2026](https://neurips.cc/Conferences/2026).
+- 2026-08-21: Evaluation code released.
 - 2026-06-01: arXiv v1, inference code, weights, and demo released.
 
 ## Installation
@@ -158,10 +159,10 @@ We thank the [MoGe](https://github.com/microsoft/moge) project for their open-so
 If you use our work in your research, please use the following BibTeX entry.
 
 ```
-@article{knaebel2026surge,
+@inproceedings{knaebel2026surge,
     title     = {{SurGe}: Improved Surface Geometry in Point Maps},
     author    = {Knaebel, Karim and Martin Garcia, Gonzalo and Schmidt, Christian and Fradlin, Ilya and Nunes, Lucas and de Geus, Daan and Leibe, Bastian},
     year      = 2026,
-    journal   = {arXiv preprint arXiv:2605.31577},
+    booktitle = {Advances in Neural Information Processing Systems},
 }
 ```
