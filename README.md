@@ -1,6 +1,6 @@
 # 🌊 SurGe: Improved Surface Geometry in Point Maps
 
-[[`Paper`](https://github.com/karimknaebel/storage/releases/download/surge-assets/surge-v1.pdf)] [[`arXiv`](https://arxiv.org/abs/2605.31577)] [[`Project Page`](http://vision.rwth-aachen.de/surge)] [[`Weights`](https://huggingface.co/karimknaebel/surge-large/tree/main)] [[`Demo`](https://huggingface.co/spaces/karimknaebel/surge)] [[`BibTeX`](#-Citation)]
+[[`Paper`](https://karimknaebel.com/papers/surge.pdf)] [[`arXiv`](https://arxiv.org/abs/2605.31577)] [[`Project Page`](http://vision.rwth-aachen.de/surge)] [[`Weights`](https://huggingface.co/karimknaebel/surge-large/tree/main)] [[`Demo`](https://huggingface.co/spaces/karimknaebel/surge)] [[`BibTeX`](#-Citation)]
 
 <table><tr><td><img width="2280" height="1182" alt="architecture" src="https://github.com/user-attachments/assets/c3823769-bc34-406c-bcf5-b9ee188acfc4" /></td></tr></table>
 
