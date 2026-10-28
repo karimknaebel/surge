@@ -10,6 +10,7 @@ const label = viewer.querySelector(".pointmap-label");
 const picker = document.getElementById("pointmap-picker");
 const frustumButton = document.getElementById("pointmap-frustum");
 const resetButton = document.getElementById("pointmap-reset");
+const cameraButton = document.getElementById("pointmap-camera");
 const fullscreenButton = document.getElementById("pointmap-fullscreen");
 const previewBase = new URL("../previews/", new URL(viewer.dataset.assetBase, document.baseURI));
 const examples = [
@@ -204,6 +205,10 @@ async function createViewer() {
     ));
   }
 
+  function cameraView() {
+    moveTo(new THREE.Vector3());
+  }
+
   renderer.domElement.addEventListener("dblclick", (event) => {
     if (!points) return;
     const rect = renderer.domElement.getBoundingClientRect();
@@ -213,7 +218,7 @@ async function createViewer() {
     raycaster.setFromCamera(new THREE.Vector2(x / rect.width * 2 - 1, 1 - y / rect.height * 2), camera);
     raycaster.params.Line.threshold = 12 * camera.position.length() / (rect.height * camera.projectionMatrix.elements[5]);
     if (frustum.visible && raycaster.intersectObject(frustum).length) {
-      moveTo(new THREE.Vector3());
+      cameraView();
     }
   });
 
@@ -221,6 +226,7 @@ async function createViewer() {
   controls.addEventListener("start", stopTransition);
   new ResizeObserver(resize).observe(stage);
   resetButton.addEventListener("click", reset);
+  cameraButton.addEventListener("click", cameraView);
   frustumButton.addEventListener("click", () => {
     const visible = frustumButton.getAttribute("aria-pressed") !== "true";
     frustumButton.setAttribute("aria-pressed", String(visible));
@@ -302,6 +308,7 @@ async function createViewer() {
     resize();
     frustumButton.disabled = false;
     resetButton.disabled = false;
+    cameraButton.disabled = false;
     fullscreenButton.disabled = false;
   };
 }
