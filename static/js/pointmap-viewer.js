@@ -143,7 +143,6 @@ async function createViewer() {
   let metadata = null;
   let frustum = null;
   let transitionFrame = 0;
-  let hasView = false;
 
   function render() {
     if (frustum) frustum.visible = frustumButton.getAttribute("aria-pressed") === "true" &&
@@ -174,14 +173,12 @@ async function createViewer() {
     transitionFrame = 0;
   }
 
-  function moveTo(position) {
+  function moveTo(position, duration = 500) {
     stopTransition();
     const startPosition = camera.position.clone();
     const startTarget = controls.target.clone();
     const target = new THREE.Vector3(0, 0, -metadata.targetDepth);
     const started = performance.now();
-    const duration = hasView ? 500 : 0;
-    hasView = true;
 
     function animate(now) {
       const progress = duration ? Math.min((now - started) / duration, 1) : 1;
@@ -197,12 +194,12 @@ async function createViewer() {
     animate(started);
   }
 
-  function reset() {
+  function reset(duration = 500) {
     moveTo(new THREE.Vector3(
       Math.sin(THREE.MathUtils.degToRad(24)) * metadata.targetDepth * 1.45,
       Math.tan(THREE.MathUtils.degToRad(6)) * metadata.targetDepth * 1.45,
       (Math.cos(THREE.MathUtils.degToRad(24)) * 1.45 - 1) * metadata.targetDepth,
-    ));
+    ), duration);
   }
 
   function cameraView() {
@@ -225,7 +222,7 @@ async function createViewer() {
   controls.addEventListener("change", render);
   controls.addEventListener("start", stopTransition);
   new ResizeObserver(resize).observe(stage);
-  resetButton.addEventListener("click", reset);
+  resetButton.addEventListener("click", () => reset());
   cameraButton.addEventListener("click", cameraView);
   frustumButton.addEventListener("click", () => {
     const visible = frustumButton.getAttribute("aria-pressed") !== "true";
@@ -305,7 +302,7 @@ async function createViewer() {
     camera.far = Math.max(...metadata.bounds.flat().map(Math.abs), metadata.targetDepth) * 100;
     controls.minDistance = metadata.targetDepth * 0.01;
     controls.maxDistance = camera.far * 0.5;
-    reset();
+    reset(0);
     resize();
     frustumButton.disabled = false;
     resetButton.disabled = false;
