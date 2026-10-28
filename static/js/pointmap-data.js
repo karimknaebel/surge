@@ -1,8 +1,5 @@
-import { FloatType } from "three";
-import { EXRLoader } from "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/EXRLoader.js";
-
 export async function loadPointmap(base, id, signal, onProgress = () => {}) {
-  const transfers = ["intrinsics.json", "exr", "png"].map((extension) => ({ extension, loaded: 0, total: null }));
+  const transfers = ["intrinsics.json", "depth.webp", "webp"].map((extension) => ({ extension, loaded: 0, total: null }));
   function reportProgress() {
     onProgress(
       transfers.reduce((sum, transfer) => sum + transfer.loaded, 0),
@@ -41,13 +38,17 @@ export async function loadPointmap(base, id, signal, onProgress = () => {}) {
   if (![fx, fy, cx, cy].every(Number.isFinite) || fx <= 0 || fy <= 0) {
     throw new Error("Invalid camera intrinsics");
   }
-  const xyz = new EXRLoader().setDataType(FloatType).parse(files[1]);
-  const canvas = await decodeImage(new Blob([files[2]], { type: "image/png" }));
+  const { near, far } = readDepthRange(files[1]);
+  const [depthImage, canvas] = await Promise.all([
+    decodeImage(new Blob([files[1]], { type: "image/webp" })),
+    decodeImage(new Blob([files[2]], { type: "image/webp" })),
+  ]);
   signal.throwIfAborted();
-  const { width, height } = xyz;
+  const { width, height } = depthImage;
   if (canvas.width !== width || canvas.height !== height) {
     throw new Error("Point map and RGB dimensions do not match");
   }
+  const packed = depthImage.getContext("2d").getImageData(0, 0, width, height).data;
   const rgba = canvas.getContext("2d").getImageData(0, 0, width, height).data;
   const positions = new Float32Array(width * height * 3);
   const colors = new Uint8Array(width * height * 3);
@@ -55,10 +56,12 @@ export async function loadPointmap(base, id, signal, onProgress = () => {}) {
   const bounds = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]];
   let count = 0;
   for (let i = 0; i < width * height; i++) {
-    // EXRLoader returns bottom-up RGBA; the image grid is top-down.
-    const offset = ((height - 1 - Math.floor(i / width)) * width + i % width) * 4;
-    const x = xyz.data[offset], y = xyz.data[offset + 1], z = xyz.data[offset + 2];
-    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+    const code = (packed[i * 4] << 8) | packed[i * 4 + 1];
+    if (code === 0 || code === 65535) continue;
+    const t = (code - 1) / 65533;
+    const z = Math.fround(near ** (1 - t) * far ** t);
+    const x = Math.fround(((i % width + 0.5) / width - cx) / fx * z);
+    const y = Math.fround(((Math.floor(i / width) + 0.5) / height - cy) / fy * z);
     positions[count * 3] = x;
     positions[count * 3 + 1] = y;
     positions[count * 3 + 2] = z;
@@ -87,6 +90,33 @@ export async function loadPointmap(base, id, signal, onProgress = () => {}) {
     colors: colors.subarray(0, count * 3),
     image: canvas,
   };
+}
+
+function readDepthRange(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const view = new DataView(buffer);
+  const decoder = new TextDecoder();
+  if (decoder.decode(bytes.subarray(0, 4)) !== "RIFF" || decoder.decode(bytes.subarray(8, 12)) !== "WEBP") {
+    throw new Error("Invalid depth WebP");
+  }
+  for (let offset = 12; offset + 8 <= bytes.length;) {
+    const length = view.getUint32(offset + 4, true);
+    if (offset + 8 + length > bytes.length) throw new Error("Truncated depth WebP");
+    if (decoder.decode(bytes.subarray(offset, offset + 4)) === "XMP ") {
+      const xml = new DOMParser().parseFromString(decoder.decode(bytes.subarray(offset + 8, offset + 8 + length)), "application/xml");
+      const description = xml.getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "Description")[0];
+      const namespace = "https://karimknaebel.github.io/surge/depth/1.0/";
+      const near = Number(description?.getAttributeNS(namespace, "near"));
+      const far = Number(description?.getAttributeNS(namespace, "far"));
+      if (!Number.isFinite(near) || !Number.isFinite(far) || near <= 0 || far < near ||
+          description?.getAttributeNS(namespace, "packing") !== "high-r") {
+        throw new Error("Invalid depth metadata");
+      }
+      return { near, far };
+    }
+    offset += 8 + length + (length & 1);
+  }
+  throw new Error("Depth WebP is missing XMP metadata");
 }
 
 function median(values) {
@@ -119,7 +149,7 @@ async function decodeImage(blob) {
   const canvas = document.createElement("canvas");
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
-  canvas.getContext("2d").drawImage(bitmap, 0, 0);
+  canvas.getContext("2d", { colorSpace: "srgb" }).drawImage(bitmap, 0, 0);
   bitmap.close();
   return canvas;
 }

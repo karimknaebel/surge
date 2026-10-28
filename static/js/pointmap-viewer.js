@@ -68,7 +68,7 @@ async function loadExample(example) {
     });
     const [display, { metadata, positions, colors, image }] = await Promise.all([
       rendererReady,
-      import("./pointmap-data.js?v=20261028-intrinsics").then(({ loadPointmap }) =>
+      import("./pointmap-data.js?v=20261028-webp").then(({ loadPointmap }) =>
         loadPointmap(viewer.dataset.assetBase, example.id, request.signal, (loaded, total) => {
           if (request.signal.aborted) return;
           if (total) {
