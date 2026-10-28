@@ -41,8 +41,7 @@
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
   </script>
-  <script type="module" src="./static/js/pointmap-viewer.js?v=20261028-switch"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+  <script type="module" src="./static/js/pointmap-viewer.js?v=20261029-previews"></script>
 </head>
 
 <body>
@@ -149,7 +148,7 @@
               supervises depth-normalized 3D finite differences, and a Neighborhood Attention Decoder (NAD) that
               progressively upsamples features and uses Neighborhood Attention for local feature mixing. Across eight
               zero-shot monocular geometry benchmarks, SurGe achieves the best average rank for global point map
-              \(\text{AbsRel}\) and consistently improves local point map and point map normal evaluations.
+              AbsRel and consistently improves local point map and point map normal evaluations.
             </p>
           </div>
         </div>
@@ -287,7 +286,7 @@
               <option value="conv-l">ConvStack-L</option>
               <option value="conv">ConvStack (MoGe-2)</option>
               <option value="dpt">DPT (VGGT)</option>
-              <option value="vit">ViT (pi^3)</option>
+              <option value="vit">ViT (π³)</option>
             </select>
             <label class="decoder-toggle">
               <input id="decoder-normal-toggle" type="checkbox" />
@@ -362,7 +361,7 @@
             alt: "ConvStack-L decoder qualitative result"
           },
           vit: {
-            label: "ViT (\\(\\pi^3\\))",
+            label: "ViT (π³)",
             points: assetUrl("decoder_ablation/vit/points.webp"),
             normals: assetUrl("decoder_ablation/vit/point_normals.webp"),
             alt: "ViT decoder qualitative result"
@@ -378,10 +377,7 @@
           document.getElementById("decoder-nad-image").src = assetUrl(
             "decoder_ablation/nat/" + (mode === "normals" ? "point_normals" : "points") + ".webp"
           );
-          document.getElementById("decoder-comparison-label").innerHTML = option.label;
-          if (window.MathJax) {
-            MathJax.typesetPromise([document.getElementById("decoder-comparison-label")]);
-          }
+          document.getElementById("decoder-comparison-label").textContent = option.label;
         }
 
         function updateDecoderSlider() {

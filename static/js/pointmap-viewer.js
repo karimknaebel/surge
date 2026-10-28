@@ -14,15 +14,15 @@ const cameraButton = document.getElementById("pointmap-camera");
 const fullscreenButton = document.getElementById("pointmap-fullscreen");
 const previewBase = new URL("../previews/", new URL(viewer.dataset.assetBase, document.baseURI));
 const examples = [
-  { id: "chairs", label: "Chairs", width: 928, height: 768 },
-  { id: "umic_building", label: "UMIC Building", width: 720, height: 976 },
-  { id: "kitchen", label: "Kitchen", width: 976, height: 720 },
-  { id: "maitreya", label: "Maitreya", width: 976, height: 720 },
-  { id: "office_chair", label: "Office Chair", width: 720, height: 976 },
-  { id: "oranges", label: "Oranges", width: 1024, height: 688 },
-  { id: "sandwich", label: "Sandwich", width: 976, height: 720 },
-  { id: "staircase", label: "Staircase", width: 1136, height: 624 },
-  { id: "volterra", label: "Volterra", width: 1136, height: 624 },
+  { id: "chairs", label: "Chairs", width: 435, height: 360 },
+  { id: "umic_building", label: "UMIC Building", width: 266, height: 360 },
+  { id: "kitchen", label: "Kitchen", width: 488, height: 360 },
+  { id: "maitreya", label: "Maitreya", width: 488, height: 360 },
+  { id: "office_chair", label: "Office Chair", width: 266, height: 360 },
+  { id: "oranges", label: "Oranges", width: 536, height: 360 },
+  { id: "sandwich", label: "Sandwich", width: 488, height: 360 },
+  { id: "staircase", label: "Staircase", width: 655, height: 360 },
+  { id: "volterra", label: "Volterra", width: 655, height: 360 },
 ];
 let activeExample = null;
 let loading = null;
