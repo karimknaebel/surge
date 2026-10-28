@@ -41,6 +41,7 @@
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
   </script>
+  <script type="module" src="./static/js/pointmap-viewer.js?v=20261028-loading"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 
@@ -204,7 +205,7 @@
       <h2 class="title is-3 has-text-centered">SurGe Architecture</h2>
       <figure class="paper-figure architecture-figure">
         <img src="https://karimknaebel.github.io/storage/surge/figures/architecture.webp"
-          alt="SurGe architecture overview" />
+          alt="SurGe architecture overview" width="2280" height="1182" loading="lazy" decoding="async" />
         <figcaption>
           <strong>SurGe architecture overview.</strong>
           SurGe combines a DINOv2 encoder with our Neighborhood Attention Decoder (NAD), which progressively upsamples
@@ -222,18 +223,18 @@
         <div class="figure-grid figure-grid-three">
           <div>
             <img src="https://karimknaebel.github.io/storage/surge/figures/teaser/umic/NAD/points.webp"
-              alt="SurGe point map example" />
+              alt="SurGe point map example" width="1920" height="1277" loading="lazy" decoding="async" />
             <p><strong>SurGe</strong></p>
           </div>
           <div>
             <img src="https://karimknaebel.github.io/storage/surge/figures/teaser/umic/moge2/points.webp"
-              alt="MoGe-2 point map example" />
+              alt="MoGe-2 point map example" width="1920" height="1238" loading="lazy" decoding="async" />
             <p>MoGe-2</p>
           </div>
           <div>
             <img
               src="https://karimknaebel.github.io/storage/surge/figures/teaser/umic/infinidepth/points.webp"
-              alt="InfiniDepth point map example" />
+              alt="InfiniDepth point map example" width="1920" height="1208" loading="lazy" decoding="async" />
             <p>InfiniDepth</p>
           </div>
         </div>
@@ -249,19 +250,19 @@
           <div>
             <img
               src="https://karimknaebel.github.io/storage/surge/figures/teaser/cup/NAD/point_normals.webp"
-              alt="SurGe point map normals example" />
+              alt="SurGe point map normals example" width="1920" height="1481" loading="lazy" decoding="async" />
             <p><strong>SurGe</strong></p>
           </div>
           <div>
             <img
               src="https://karimknaebel.github.io/storage/surge/figures/teaser/cup/moge2/point_normals.webp"
-              alt="MoGe-2 point map normals example" />
+              alt="MoGe-2 point map normals example" width="1920" height="1576" loading="lazy" decoding="async" />
             <p>MoGe-2</p>
           </div>
           <div>
             <img
               src="https://karimknaebel.github.io/storage/surge/figures/teaser/cup/infinidepth/point_normals.webp"
-              alt="InfiniDepth point map normals example" />
+              alt="InfiniDepth point map normals example" width="1920" height="1562" loading="lazy" decoding="async" />
             <p>InfiniDepth</p>
           </div>
         </div>
@@ -296,11 +297,11 @@
           <div class="image-compare" id="decoder-compare">
             <img class="image-compare-base"
               src="https://karimknaebel.github.io/storage/surge/figures/decoder_ablation/conv_l/points.webp"
-              alt="ConvStack-L decoder qualitative result" id="decoder-comparison-image" />
+              alt="ConvStack-L decoder qualitative result" id="decoder-comparison-image" width="1763" height="1049" loading="lazy" decoding="async" />
             <div class="image-compare-overlay" id="decoder-overlay">
               <img
                 src="https://karimknaebel.github.io/storage/surge/figures/decoder_ablation/nat/points.webp"
-                alt="NAD decoder qualitative result" id="decoder-nad-image" />
+                alt="NAD decoder qualitative result" id="decoder-nad-image" width="1763" height="1049" loading="lazy" decoding="async" />
             </div>
             <div class="image-compare-label image-compare-label-left">NAD (SurGe)</div>
             <div class="image-compare-label image-compare-label-right" id="decoder-comparison-label">
@@ -412,7 +413,6 @@
           );
         }
       </script>
-      <script type="module" src="./static/js/pointmap-viewer.js?v=20261028-camera-view"></script>
     </div>
   </section>
 

@@ -35,7 +35,7 @@ for (const example of examples) {
   button.dataset.example = example.id;
   button.setAttribute("aria-label", example.label);
   button.setAttribute("aria-pressed", "false");
-  button.innerHTML = `<img src="${previewBase}${example.id}.webp" width="${example.width}" height="${example.height}" alt="" loading="lazy" draggable="false" />`;
+  button.innerHTML = `<img src="${previewBase}${example.id}.webp" width="${example.width}" height="${example.height}" alt="" loading="lazy" decoding="async" draggable="false" />`;
   button.addEventListener("click", () => loadExample(example));
   picker.append(button);
 }
