@@ -177,12 +177,6 @@ body {
   transition: border-color 150ms, background 150ms, color 150ms;
 }
 
-.pointmap-icon-button[aria-pressed="true"] {
-  border-color: #b7d8ee;
-  background: #edf6fc;
-  color: #247bb0;
-}
-
 .pointmap-icon-button:disabled {
   cursor: default;
   opacity: 0.4;

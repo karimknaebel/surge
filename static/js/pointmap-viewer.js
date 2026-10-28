@@ -231,6 +231,7 @@ async function createViewer() {
     const visible = frustumButton.getAttribute("aria-pressed") !== "true";
     frustumButton.setAttribute("aria-pressed", String(visible));
     frustumButton.title = visible ? "Hide camera frustum" : "Show camera frustum";
+    frustumButton.querySelector("i").className = visible ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
     render();
   });
   fullscreenButton.hidden = !document.fullscreenEnabled;
