@@ -17,6 +17,10 @@ body {
 }
 
 .publication-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.75rem;
   margin-top: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -87,28 +91,177 @@ body {
   margin-bottom: auto;
 }
 
-.rerun-viewer {
+.pointmap-viewer {
   position: relative;
+  display: flex;
+  flex-direction: column;
   height: min(72vh, 760px);
   min-height: 520px;
   overflow: hidden;
-  border: 1px solid #dbdbdb;
-  border-radius: 6px;
+  border: 1px solid #dce0e5;
+  border-radius: 16px;
   background: #1c1c1c;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
 }
 
-.rerun-viewer canvas {
+.pointmap-viewer canvas {
   position: relative;
-  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 
-.rerun-viewer-placeholder {
+.pointmap-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.pointmap-viewer [hidden] {
+  display: none;
+}
+
+.pointmap-label {
+  overflow: hidden;
+  color: #858b94;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pointmap-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 60px;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #e4e7eb;
+  background: #fff;
+  color: #242424;
+  font-size: 0.88rem;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.pointmap-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pointmap-actions {
+  display: flex;
+  justify-self: end;
+  gap: 0.45rem;
+}
+
+.pointmap-icon-button {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #e0e4e9;
+  border-radius: 10px;
+  background: #fafbfc;
+  color: #515b68;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 3%);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms, color 150ms;
+}
+
+.pointmap-icon-button[aria-pressed="true"] {
+  border-color: #b7d8ee;
+  background: #edf6fc;
+  color: #247bb0;
+}
+
+.pointmap-icon-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.pointmap-icon-button:focus-visible,
+.pointmap-option:focus-visible {
+  outline: 2px solid #209cee;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .pointmap-icon-button:hover:not(:disabled) {
+    border-color: #9fc9e4;
+    background: #edf6fc;
+    color: #247bb0;
+  }
+}
+
+.pointmap-help {
+  margin: 0;
+  color: #858b94;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.pointmap-viewer:fullscreen {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+
+@media (pointer: coarse) {
+  .pointmap-help {
+    font-size: 0;
+  }
+
+  .pointmap-help::after {
+    content: "One finger to orbit · Pinch to zoom · Two fingers to pan";
+    font-size: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .pointmap-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pointmap-help {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .pointmap-toolbar {
+    min-height: 56px;
+    padding-inline: 0.65rem;
+  }
+
+  .pointmap-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .pointmap-label {
+    font-size: 0.65rem;
+  }
+}
+
+.pointmap-status {
+  z-index: 2;
+  background: #1c1c1c;
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
@@ -117,51 +270,103 @@ body {
   text-align: center;
 }
 
-.rerun-recording-picker {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.6rem;
-  margin-top: 0.85rem;
+.pointmap-download {
+  width: min(280px, 100%);
 }
 
-.rerun-recording-option {
-  display: grid;
-  grid-template-rows: auto 2.4rem;
-  overflow: hidden;
-  padding: 0;
-  border: 1px solid #dbdbdb;
-  border-radius: 6px;
-  background: white;
-  color: #242424;
-  cursor: pointer;
-}
-
-.rerun-recording-option:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
-.rerun-recording-option.is-active {
-  border-color: hsl(204, 86%, 53%);
-  box-shadow: 0 0 0 2px hsla(204, 86%, 53%, 0.18);
-}
-
-.rerun-recording-option img {
+.pointmap-progress {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: 6px;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+  border: 0;
+  border-radius: 2px;
+  background: #3a3a3a;
 }
 
-.rerun-recording-option span {
+.pointmap-progress::-webkit-progress-bar {
+  border-radius: 2px;
+  background: transparent;
+}
+
+.pointmap-progress::-webkit-progress-value {
+  border-radius: 2px;
+  background: #b8c3cd;
+}
+
+.pointmap-progress::-moz-progress-bar {
+  border-radius: 2px;
+  background: #b8c3cd;
+}
+
+.pointmap-download-details {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.45rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.15;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  color: #aaa;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+
+.pointmap-picker {
+  --preview-height: clamp(56px, 7vw, 80px);
+  display: flex;
+  justify-content: safe center;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.35rem;
+  margin-bottom: 1rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: #c7ccd3 transparent;
+  overscroll-behavior-x: contain;
+}
+
+.pointmap-option {
+  display: block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid #dce0e5;
+  border-radius: 10px;
+  background: #e9ecf0;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
+  opacity: 0.65;
+  cursor: pointer;
+  scroll-snap-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: opacity 150ms, border-color 150ms, box-shadow 150ms;
+}
+
+.pointmap-option.is-active {
+  border-color: #209cee;
+  box-shadow: 0 0 0 2px rgb(32 156 238 / 12%);
+  opacity: 1;
+}
+
+.pointmap-option img {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: var(--preview-height);
+}
+
+.pointmap-option:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .pointmap-option:hover {
+    opacity: 1;
+  }
+
+  .pointmap-option:hover:not(.is-active) {
+    border-color: #84badc;
+  }
 }
 
 .decoder-comparison {
@@ -309,7 +514,7 @@ body {
 }
 
 @media screen and (max-width: 520px) {
-  .rerun-viewer {
+  .pointmap-viewer {
     min-height: 420px;
   }
 

@@ -37,7 +37,10 @@
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1.9.6/css/academicons.min.css" />
-  <link rel="stylesheet" href="./static/css/index.css?v=20260615-rerun-no-default" />
+  <link rel="stylesheet" href="./static/css/index.css?v=20261028-threejs" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+  </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 
@@ -155,23 +158,78 @@
 
   <section class="section">
     <div class="container is-media-width">
-      <h2 class="title is-3 has-text-centered">Qualitative Results</h2>
+      <h2 class="title is-3 has-text-centered">Interactive 3D Results</h2>
+
+      <figure class="paper-figure">
+        <nav class="pointmap-picker" id="pointmap-picker" aria-label="Point map examples"></nav>
+        <div class="pointmap-viewer" id="pointmap-viewer"
+          data-asset-base="https://karimknaebel.github.io/storage/surge/pointmaps/">
+          <div class="pointmap-toolbar" role="group" aria-label="3D viewer controls">
+            <div class="pointmap-title"><strong>SurGe</strong><span class="pointmap-label" hidden></span></div>
+            <p class="pointmap-help">Drag to orbit · Scroll to zoom · Right-drag to pan</p>
+            <div class="pointmap-actions">
+              <button class="pointmap-icon-button" id="pointmap-reset" type="button" aria-label="Reset view" title="Reset view" disabled>
+                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+              </button>
+              <button class="pointmap-icon-button" id="pointmap-frustum" type="button" aria-label="Camera frustum" title="Hide camera frustum" aria-pressed="true" disabled>
+                <i class="fa-solid fa-camera" aria-hidden="true"></i>
+              </button>
+              <button class="pointmap-icon-button" id="pointmap-fullscreen" type="button" aria-label="Fullscreen" title="Fullscreen" disabled>
+                <i class="fa-solid fa-expand" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="pointmap-stage">
+            <div class="pointmap-status" role="status">
+              <span class="pointmap-status-text">Loading point map…</span>
+              <div class="pointmap-download">
+                <progress class="pointmap-progress" max="1" aria-label="Point map download progress"></progress>
+                <div class="pointmap-download-details" aria-hidden="true">
+                  <span class="pointmap-download-size">0.0 MB downloaded</span>
+                  <span class="pointmap-download-percent"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-content-width">
+      <h2 class="title is-3 has-text-centered">SurGe Architecture</h2>
+      <figure class="paper-figure architecture-figure">
+        <img src="https://karimknaebel.github.io/storage/surge/figures/architecture.webp"
+          alt="SurGe architecture overview" />
+        <figcaption>
+          <strong>SurGe architecture overview.</strong>
+          SurGe combines a DINOv2 encoder with our Neighborhood Attention Decoder (NAD), which progressively upsamples
+          features with local Neighborhood Attention blocks.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-media-width">
+      <h2 class="title is-3 has-text-centered">Qualitative Comparison</h2>
 
       <figure class="paper-figure">
         <div class="figure-grid figure-grid-three">
           <div>
-            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-nad-points.webp"
+            <img src="https://karimknaebel.github.io/storage/surge/figures/teaser-umic-nad-points.webp"
               alt="SurGe point map example" />
             <p><strong>SurGe</strong></p>
           </div>
           <div>
-            <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-moge2-points.webp"
+            <img src="https://karimknaebel.github.io/storage/surge/figures/teaser-umic-moge2-points.webp"
               alt="MoGe-2 point map example" />
             <p>MoGe-2</p>
           </div>
           <div>
             <img
-              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-umic-infinidepth-points.webp"
+              src="https://karimknaebel.github.io/storage/surge/figures/teaser-umic-infinidepth-points.webp"
               alt="InfiniDepth point map example" />
             <p>InfiniDepth</p>
           </div>
@@ -187,19 +245,19 @@
         <div class="figure-grid figure-grid-three">
           <div>
             <img
-              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-nad-point-normals.webp"
+              src="https://karimknaebel.github.io/storage/surge/figures/teaser-cup-nad-point-normals.webp"
               alt="SurGe point map normals example" />
             <p><strong>SurGe</strong></p>
           </div>
           <div>
             <img
-              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-moge2-point-normals.webp"
+              src="https://karimknaebel.github.io/storage/surge/figures/teaser-cup-moge2-point-normals.webp"
               alt="MoGe-2 point map normals example" />
             <p>MoGe-2</p>
           </div>
           <div>
             <img
-              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/teaser-cup-infinidepth-point-normals.webp"
+              src="https://karimknaebel.github.io/storage/surge/figures/teaser-cup-infinidepth-point-normals.webp"
               alt="InfiniDepth point map normals example" />
             <p>InfiniDepth</p>
           </div>
@@ -214,41 +272,8 @@
   </section>
 
   <section class="section">
-    <div class="container is-media-width">
-      <h2 class="title is-3 has-text-centered">Interactive 3D Results</h2>
-
-      <figure class="paper-figure">
-        <div class="rerun-viewer" id="rerun-viewer">
-          <div class="rerun-viewer-placeholder">Select an example below to load the interactive 3D viewer.</div>
-        </div>
-        <div class="rerun-recording-picker" id="rerun-recording-picker" aria-label="Rerun recordings"></div>
-        <figcaption>
-          <strong>Rerun viewer.</strong>
-          Explore the selected example interactively in 3D. These are unfiltered raw 3D point predictions; depth is
-          not in metric scale.
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="section">
     <div class="container is-content-width">
-      <h2 class="title is-3 has-text-centered">SurGe Architecture</h2>
-      <figure class="paper-figure architecture-figure">
-        <img src="https://github.com/karimknaebel/storage/releases/download/surge-assets/architecture.webp"
-          alt="SurGe architecture overview" />
-        <figcaption>
-          <strong>SurGe architecture overview.</strong>
-          SurGe combines a DINOv2 encoder with our Neighborhood Attention Decoder (NAD), which progressively upsamples
-          features with local Neighborhood Attention blocks.
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container is-content-width">
-      <h2 class="title is-3 has-text-centered">Decoder Comparison</h2>
+      <h2 class="title is-3 has-text-centered">Qualitative Decoder Comparison</h2>
 
       <figure class="paper-figure">
         <div class="decoder-comparison">
@@ -267,11 +292,11 @@
           </div>
           <div class="image-compare" id="decoder-compare">
             <img class="image-compare-base"
-              src="https://github.com/karimknaebel/storage/releases/download/surge-assets/decoder-ablation-conv-l-points.webp"
+              src="https://karimknaebel.github.io/storage/surge/figures/decoder-ablation-conv-l-points.webp"
               alt="ConvStack-L decoder qualitative result" id="decoder-comparison-image" />
             <div class="image-compare-overlay" id="decoder-overlay">
               <img
-                src="https://github.com/karimknaebel/storage/releases/download/surge-assets/decoder-ablation-nat-points.webp"
+                src="https://karimknaebel.github.io/storage/surge/figures/decoder-ablation-nat-points.webp"
                 alt="NAD decoder qualitative result" id="decoder-nad-image" />
             </div>
             <div class="image-compare-label image-compare-label-left">NAD (SurGe)</div>
@@ -310,7 +335,7 @@
         </button>
       </div>
       <script>
-        const assetBase = "https://github.com/karimknaebel/storage/releases/download/surge-assets/";
+        const assetBase = "https://karimknaebel.github.io/storage/surge/figures/";
         const assetUrl = (filename) => assetBase + filename;
 
         const decoderComparisons = {
@@ -384,93 +409,7 @@
           );
         }
       </script>
-      <script type="module">
-        import { WebViewer } from "https://esm.sh/@rerun-io/web-viewer@0.33.0";
-
-        const rerunAssetBase = "https://raw.githubusercontent.com/karimknaebel/storage/main/surge-assets/rerun/";
-        const rerunRecordings = [
-          { id: "chairs", label: "Chairs" },
-          { id: "umic_building", label: "UMIC Building" },
-          { id: "kitchen", label: "Kitchen" },
-          { id: "maitreya", label: "Maitreya" },
-          { id: "office_chair", label: "Office Chair" },
-          { id: "oranges", label: "Oranges" },
-          { id: "sandwich", label: "Sandwich" },
-          { id: "staircase", label: "Staircase" },
-          { id: "volterra", label: "Volterra" }
-        ].map((recording) => ({
-          ...recording,
-          preview: rerunAssetBase + recording.id + ".jpg",
-          rrd: rerunAssetBase + recording.id + ".rrd"
-        }));
-        let activeRerunRecording = null;
-        let openedRerunRecording = null;
-        let rerunViewer = null;
-        let rerunViewerStart = null;
-
-        const rerunViewerElement = document.getElementById("rerun-viewer");
-        const rerunRecordingPicker = document.getElementById("rerun-recording-picker");
-        for (const recording of rerunRecordings) {
-          const button = document.createElement("button");
-          button.className = "rerun-recording-option";
-          button.type = "button";
-          button.dataset.recording = recording.id;
-          button.innerHTML = `
-            <img src="${recording.preview}" alt="" loading="lazy" />
-            <span>${recording.label}</span>
-          `;
-          button.addEventListener("click", async () => {
-            if (recording === activeRerunRecording) {
-              return;
-            }
-            activeRerunRecording = recording;
-            updateRerunRecordingPicker();
-            await ensureRerunViewer();
-            if (recording !== activeRerunRecording) {
-              return;
-            }
-            if (openedRerunRecording) {
-              rerunViewer.close(openedRerunRecording.rrd);
-            }
-            rerunViewer.open(recording.rrd);
-            openedRerunRecording = recording;
-          });
-          rerunRecordingPicker.append(button);
-        }
-
-        function updateRerunRecordingPicker() {
-          for (const button of rerunRecordingPicker.querySelectorAll(".rerun-recording-option")) {
-            const isActive = button.dataset.recording === activeRerunRecording?.id;
-            button.classList.toggle("is-active", isActive);
-            button.setAttribute("aria-pressed", isActive);
-          }
-        }
-
-        function ensureRerunViewer() {
-          if (!rerunViewerStart) {
-            rerunViewer = new WebViewer();
-            rerunViewerStart = rerunViewer.start(
-              null,
-              rerunViewerElement,
-              {
-                allow_fullscreen: true,
-                hide_welcome_screen: true,
-                height: "",
-                panel_state_overrides: {
-                  blueprint: "Hidden",
-                  selection: "Hidden",
-                  time: "Hidden"
-                },
-                theme: "light",
-                width: ""
-              }
-            );
-          }
-          return rerunViewerStart;
-        }
-
-        updateRerunRecordingPicker();
-      </script>
+      <script type="module" src="./static/js/pointmap-viewer.js?v=20261028-intrinsics"></script>
     </div>
   </section>
 
