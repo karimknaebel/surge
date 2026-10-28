@@ -97,8 +97,8 @@ def save_maps(save_path: Path, result: dict[str, np.ndarray]) -> None:
     (save_path / "fov.json").write_text(
         json.dumps(
             {
-                "fov_x": round(float(np.rad2deg(fov_x)), 2),
-                "fov_y": round(float(np.rad2deg(fov_y)), 2),
+                "fov_x": float(np.rad2deg(fov_x)),
+                "fov_y": float(np.rad2deg(fov_y)),
             },
             indent=2,
         )
