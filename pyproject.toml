@@ -12,7 +12,7 @@ dependencies = [
   "numpy",
   "natten>=0.21.5",
   "utils3d @ git+https://github.com/EasternJournalist/utils3d.git@31d016566e9dbf9f499aa6a96b1f52f6dc63227b",
-  "opencv-python",
+  "opencv-python-headless<5",
   "timm>=1.0.15",
   "einops>=0.8.1",
   "specbuild>=0.1.0,<0.2.0",
