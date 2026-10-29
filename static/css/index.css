@@ -100,7 +100,7 @@ body {
   overflow: hidden;
   border: 1px solid #dce0e5;
   border-radius: 16px;
-  background: #1c1c1c;
+  background: #000;
   box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
 }
 
@@ -116,6 +116,15 @@ body {
   position: relative;
   flex: 1;
   min-height: 0;
+  background: #000;
+}
+
+.pointmap-stage.is-light {
+  --status-text: #242424;
+  --status-muted: #666;
+  --progress-track: #e4e7eb;
+  --progress-fill: #515b68;
+  background: #fff;
 }
 
 .pointmap-viewer [hidden] {
@@ -175,6 +184,26 @@ body {
   font: inherit;
   cursor: pointer;
   transition: border-color 150ms, background 150ms, color 150ms;
+}
+
+.pointmap-icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pointmap-icon-button svg circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.pointmap-icon-button[aria-pressed="false"] .pointmap-icon-on,
+.pointmap-icon-button[aria-pressed="true"] .pointmap-icon-off {
+  display: none;
 }
 
 .pointmap-icon-button:disabled {
@@ -250,7 +279,7 @@ body {
 
 .pointmap-status {
   z-index: 2;
-  background: #1c1c1c;
+  background: inherit;
   position: absolute;
   inset: 0;
   display: flex;
@@ -259,7 +288,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  color: #f2f2f2;
+  color: var(--status-text, #f2f2f2);
   font-size: 1rem;
   text-align: center;
 }
@@ -277,7 +306,7 @@ body {
   overflow: hidden;
   border: 0;
   border-radius: 2px;
-  background: #3a3a3a;
+  background: var(--progress-track, #3a3a3a);
 }
 
 .pointmap-progress::-webkit-progress-bar {
@@ -287,19 +316,19 @@ body {
 
 .pointmap-progress::-webkit-progress-value {
   border-radius: 2px;
-  background: #b8c3cd;
+  background: var(--progress-fill, #b8c3cd);
 }
 
 .pointmap-progress::-moz-progress-bar {
   border-radius: 2px;
-  background: #b8c3cd;
+  background: var(--progress-fill, #b8c3cd);
 }
 
 .pointmap-download-details {
   display: flex;
   justify-content: space-between;
   margin-top: 0.6rem;
-  color: #aaa;
+  color: var(--status-muted, #aaa);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   line-height: 1.4;

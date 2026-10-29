@@ -11,6 +11,7 @@ const picker = document.getElementById("pointmap-picker");
 const frustumButton = document.getElementById("pointmap-frustum");
 const resetButton = document.getElementById("pointmap-reset");
 const cameraButton = document.getElementById("pointmap-camera");
+const backgroundButton = document.getElementById("pointmap-background");
 const fullscreenButton = document.getElementById("pointmap-fullscreen");
 const previewBase = new URL("../previews/", new URL(viewer.dataset.assetBase, document.baseURI));
 const examples = [
@@ -111,7 +112,7 @@ async function createViewer() {
   ]);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x1c1c1c);
+  renderer.setClearColor(0x000000);
   renderer.domElement.setAttribute("aria-label", "Interactive point map. Drag to orbit, scroll to zoom, right-drag to pan, middle-drag to roll. Double-click the camera frustum for its perspective.");
   stage.prepend(renderer.domElement);
   const scene = new THREE.Scene();
@@ -153,6 +154,7 @@ async function createViewer() {
   let frustum = null;
   let transitionFrame = 0;
   let rollPointer = null;
+  let whiteBackground = false;
 
   function render() {
     if (frustum) frustum.visible = frustumButton.getAttribute("aria-pressed") === "true" &&
@@ -273,11 +275,18 @@ async function createViewer() {
   new ResizeObserver(resize).observe(stage);
   resetButton.addEventListener("click", () => reset());
   cameraButton.addEventListener("click", cameraView);
+  backgroundButton.addEventListener("click", () => {
+    whiteBackground = !whiteBackground;
+    renderer.setClearColor(whiteBackground ? 0xffffff : 0x000000);
+    stage.classList.toggle("is-light", whiteBackground);
+    backgroundButton.title = whiteBackground ? "Switch to black background" : "Switch to white background";
+    backgroundButton.setAttribute("aria-pressed", String(whiteBackground));
+    render();
+  });
   frustumButton.addEventListener("click", () => {
     const visible = frustumButton.getAttribute("aria-pressed") !== "true";
     frustumButton.setAttribute("aria-pressed", String(visible));
     frustumButton.title = visible ? "Hide camera frustum" : "Show camera frustum";
-    frustumButton.querySelector("i").className = visible ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
     render();
   });
   fullscreenButton.hidden = !document.fullscreenEnabled;
@@ -356,6 +365,7 @@ async function createViewer() {
     frustumButton.disabled = false;
     resetButton.disabled = false;
     cameraButton.disabled = false;
+    backgroundButton.disabled = false;
     fullscreenButton.disabled = false;
   };
 }
