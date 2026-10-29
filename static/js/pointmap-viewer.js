@@ -112,12 +112,21 @@ async function createViewer() {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x1c1c1c);
-  renderer.domElement.setAttribute("aria-label", "Interactive point map. Drag to orbit, scroll to zoom, right-drag to pan. Double-click the camera frustum for its perspective.");
+  renderer.domElement.setAttribute("aria-label", "Interactive point map. Drag to orbit, scroll to zoom, right-drag to pan, middle-drag to roll. Double-click the camera frustum for its perspective.");
   stage.prepend(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera();
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.rotateSpeed = matchMedia("(pointer: coarse)").matches ? 0.5 : 1;
+  controls.mouseButtons.MIDDLE = -1;
+  const updateOrbit = controls.update.bind(controls);
+  const worldUp = new THREE.Vector3(0, 1, 0);
+  // OrbitControls r169 caches its up basis, so refresh it after rolling the camera.
+  controls.update = (delta) => {
+    controls._quat.setFromUnitVectors(camera.up, worldUp);
+    controls._quatInverse.copy(controls._quat).invert();
+    return updateOrbit(delta);
+  };
   const material = new THREE.ShaderMaterial({
     uniforms: { pointSize: { value: 2 * renderer.getPixelRatio() } },
     vertexShader: `
@@ -143,6 +152,7 @@ async function createViewer() {
   let metadata = null;
   let frustum = null;
   let transitionFrame = 0;
+  let rollPointer = null;
 
   function render() {
     if (frustum) frustum.visible = frustumButton.getAttribute("aria-pressed") === "true" &&
@@ -175,8 +185,11 @@ async function createViewer() {
 
   function moveTo(position, duration = 500) {
     stopTransition();
+    rollPointer = null;
     const startPosition = camera.position.clone();
     const startTarget = controls.target.clone();
+    const startUp = camera.up.clone();
+    const upRotation = new THREE.Quaternion().setFromUnitVectors(startUp, worldUp);
     const target = new THREE.Vector3(0, 0, -metadata.targetDepth);
     const started = performance.now();
 
@@ -184,7 +197,7 @@ async function createViewer() {
       const progress = duration ? Math.min((now - started) / duration, 1) : 1;
       const eased = progress * progress * (3 - 2 * progress);
       camera.position.lerpVectors(startPosition, position, eased);
-      camera.up.set(0, 1, 0);
+      camera.up.copy(startUp).applyQuaternion(new THREE.Quaternion().slerp(upRotation, eased));
       controls.target.lerpVectors(startTarget, target, eased);
       controls.update();
       render();
@@ -204,6 +217,42 @@ async function createViewer() {
 
   function cameraView() {
     moveTo(new THREE.Vector3());
+  }
+
+  function rollAngle(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = event.clientX - rect.left - rect.width / 2;
+    const y = rect.top + rect.height / 2 - event.clientY;
+    return Math.hypot(x, y) < 24 ? null : Math.atan2(y, x);
+  }
+
+  renderer.domElement.addEventListener("pointerdown", (event) => {
+    if (event.button !== 1 || !points) return;
+    event.preventDefault();
+    stopTransition();
+    rollPointer = { id: event.pointerId, angle: rollAngle(event) };
+  });
+  renderer.domElement.addEventListener("pointermove", (event) => {
+    if (rollPointer?.id !== event.pointerId) return;
+    if (!(event.buttons & 4)) {
+      rollPointer = null;
+      return;
+    }
+    const angle = rollAngle(event);
+    if (angle !== null && rollPointer.angle !== null) {
+      const delta = angle - rollPointer.angle;
+      camera.up.applyAxisAngle(
+        controls.target.clone().sub(camera.position).normalize(),
+        Math.atan2(Math.sin(delta), Math.cos(delta)),
+      ).normalize();
+      controls.update();
+    }
+    rollPointer.angle = angle;
+  });
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+    renderer.domElement.addEventListener(type, (event) => {
+      if (rollPointer?.id === event.pointerId) rollPointer = null;
+    });
   }
 
   renderer.domElement.addEventListener("dblclick", (event) => {
