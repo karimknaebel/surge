@@ -112,7 +112,7 @@ async function createViewer() {
   ]);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000);
+  renderer.setClearColor(0x171717);
   renderer.domElement.setAttribute("aria-label", "Interactive point map. Drag to orbit, scroll to zoom, right-drag to pan, middle-drag to roll. Double-click the camera frustum for its perspective.");
   stage.prepend(renderer.domElement);
   const scene = new THREE.Scene();
@@ -156,7 +156,14 @@ async function createViewer() {
   let rollPointer = null;
   let whiteBackground = false;
 
+  let pureBackground = false;
+
   function render() {
+    const background = pureBackground
+      ? (whiteBackground ? 0xffffff : 0x000000)
+      : (whiteBackground ? 0xf5f5f5 : 0x171717);
+    renderer.setClearColor(background);
+    stage.style.backgroundColor = `#${background.toString(16).padStart(6, "0")}`;
     if (frustum) frustum.visible = frustumButton.getAttribute("aria-pressed") === "true" &&
       camera.position.length() > metadata.targetDepth * 0.01;
     renderer.render(scene, camera);
@@ -275,11 +282,12 @@ async function createViewer() {
   new ResizeObserver(resize).observe(stage);
   resetButton.addEventListener("click", () => reset());
   cameraButton.addEventListener("click", cameraView);
-  backgroundButton.addEventListener("click", () => {
-    whiteBackground = !whiteBackground;
-    renderer.setClearColor(whiteBackground ? 0xffffff : 0x000000);
+  backgroundButton.addEventListener("click", (event) => {
+    if (event.altKey) pureBackground = !pureBackground;
+    else whiteBackground = !whiteBackground;
+    backgroundButton.classList.toggle("is-pure", pureBackground);
     stage.classList.toggle("is-light", whiteBackground);
-    backgroundButton.title = whiteBackground ? "Switch to black background" : "Switch to white background";
+    backgroundButton.title = whiteBackground ? "Switch to dark background" : "Switch to light background";
     backgroundButton.setAttribute("aria-pressed", String(whiteBackground));
     render();
   });

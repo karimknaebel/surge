@@ -100,7 +100,7 @@ body {
   overflow: hidden;
   border: 1px solid #dce0e5;
   border-radius: 16px;
-  background: #000;
+  background: #171717;
   box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
 }
 
@@ -116,7 +116,7 @@ body {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: #000;
+  background: #171717;
 }
 
 .pointmap-stage.is-light {
@@ -124,7 +124,7 @@ body {
   --status-muted: #666;
   --progress-track: #e4e7eb;
   --progress-fill: #515b68;
-  background: #fff;
+  background: #f5f5f5;
 }
 
 .pointmap-viewer [hidden] {
@@ -170,6 +170,7 @@ body {
 }
 
 .pointmap-icon-button {
+  position: relative;
   display: grid;
   flex: 0 0 auto;
   place-items: center;
@@ -184,6 +185,17 @@ body {
   font: inherit;
   cursor: pointer;
   transition: border-color 150ms, background 150ms, color 150ms;
+}
+
+.pointmap-icon-button.is-pure::after {
+  content: "";
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .pointmap-icon-button svg {
