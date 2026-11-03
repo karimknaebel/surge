@@ -3,14 +3,14 @@ from typing import Callable
 
 import torch
 import torch.nn as nn
-from natten.functional import neighborhood_attention_generic
-from natten.utils.checks import check_all_args
 from specbuild import REGISTRY
 from timm.layers import LayerNorm, LayerScale, RmsNorm
 from timm.layers.pos_embed_sincos import RotaryEmbeddingCat, apply_rot_embed_cat
 from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
     checkpoint_wrapper,
 )
+
+from surge.ops import neighborhood_attention2d
 
 
 @REGISTRY.register()
@@ -24,7 +24,6 @@ class NAD(nn.Module):
         head_dim: int | list[int] = 64,
         mlp_ratio: float = 4.0,
         kernel_size: int | list[int] = 9,
-        dilation: int | list[int] = 1,
         qk_norm: bool | list[bool] = True,
         rope: bool = True,
         rope_temperature_scale: float = 1.0 / math.pi,
@@ -52,7 +51,6 @@ class NAD(nn.Module):
         depth = repeat_stage_arg(depth)
         head_dim = repeat_stage_arg(head_dim)
         kernel_size = repeat_stage_arg(kernel_size)
-        dilation = repeat_stage_arg(dilation)
         init_values = repeat_stage_arg(init_values)
         qk_norm = repeat_stage_arg(qk_norm)
         upsample_mode = repeat_stage_arg(upsample_mode, num_stages - 1)
@@ -72,7 +70,6 @@ class NAD(nn.Module):
                     depth=depth[i],
                     head_dim=head_dim[i],
                     kernel_size=kernel_size[i],
-                    dilation=dilation[i],
                     qk_norm=qk_norm[i],
                     init_values=init_values[i],
                     input_init_values=input_init_values[i],
@@ -131,8 +128,7 @@ class NADStage(nn.Module):
         depth: int,
         head_dim: int,
         mlp_ratio: float,
-        kernel_size: int | tuple[int, int],
-        dilation: int | tuple[int, int],
+        kernel_size: int,
         qk_norm: bool,
         rope: bool,
         rope_temperature_scale: float,
@@ -147,15 +143,8 @@ class NADStage(nn.Module):
         super().__init__()
         assert embed_dim % head_dim == 0
 
-        kernel_size, _, dilation, _ = check_all_args(2, kernel_size, 1, dilation, False)
         if rope:
-            effective_kernel_size = max(
-                dilation_dim * (kernel_dim - 1) + 1
-                for kernel_dim, dilation_dim in zip(kernel_size, dilation, strict=True)
-            )
-            rope_temperature = max(
-                1.0, rope_temperature_scale * float(effective_kernel_size)
-            )
+            rope_temperature = max(1.0, rope_temperature_scale * float(kernel_size))
         else:
             rope_temperature = None
         if rope_temperature is not None:
@@ -191,7 +180,6 @@ class NADStage(nn.Module):
                     norm_layer=norm_layer,
                     rope_half=self.rope_half,
                     kernel_size=kernel_size,
-                    dilation=dilation,
                 )
                 for _ in range(depth)
             )
@@ -258,8 +246,7 @@ class NADBlock(nn.Module):
         act_layer: str | Callable = "relu",
         norm_layer: str | None = None,
         rope_half: bool = False,
-        kernel_size: int | tuple[int, int] = 9,
-        dilation: int | tuple[int, int] = 1,
+        kernel_size: int = 9,
     ):
         super().__init__()
 
@@ -268,7 +255,6 @@ class NADBlock(nn.Module):
             dim,
             num_heads=num_heads,
             kernel_size=kernel_size,
-            dilation=dilation,
             qkv_bias=qkv_bias,
             qk_norm=qk_norm,
             proj_drop=proj_drop,
@@ -309,8 +295,7 @@ class NeighborhoodAttention2d(nn.Module):
         self,
         embed_dim: int,
         num_heads: int,
-        kernel_size: int | tuple[int, int],
-        dilation: int | tuple[int, int] = 1,
+        kernel_size: int,
         qkv_bias: bool = True,
         qk_scale: float | None = None,
         qk_norm: bool = False,
@@ -318,18 +303,13 @@ class NeighborhoodAttention2d(nn.Module):
         rope_half: bool = False,
     ):
         super().__init__()
-        kernel_size, _, dilation, is_causal = check_all_args(
-            2, kernel_size, 1, dilation, False
-        )
         assert embed_dim % num_heads == 0
 
         self.embed_dim = embed_dim
         self.num_heads = num_heads
         self.head_dim = self.embed_dim // self.num_heads
-        self.scale = qk_scale or self.head_dim**-0.5
+        self.scale = self.head_dim**-0.5 if qk_scale is None else qk_scale
         self.kernel_size = kernel_size
-        self.dilation = dilation
-        self.is_causal = is_causal
         self.rope_half = rope_half
         self.q_norm = LayerNorm(self.head_dim) if qk_norm else nn.Identity()
         self.k_norm = LayerNorm(self.head_dim) if qk_norm else nn.Identity()
@@ -356,22 +336,14 @@ class NeighborhoodAttention2d(nn.Module):
             q = apply_rot_embed_cat(q, rope_embed, half=self.rope_half)
             k = apply_rot_embed_cat(k, rope_embed, half=self.rope_half)
 
-        x = neighborhood_attention_generic(
-            q,
-            k,
-            v,
-            kernel_size=self.kernel_size,
-            dilation=self.dilation,
-            is_causal=self.is_causal,
-            scale=self.scale,
-        )
+        x = neighborhood_attention2d(q, k, v, self.kernel_size, self.scale)
         x = x.reshape(b, h, w, c)
 
         x = self.proj_drop(self.proj(x))
         return x
 
     def extra_repr(self) -> str:
-        return f"kernel_size={self.kernel_size}, dilation={self.dilation}"
+        return f"kernel_size={self.kernel_size}"
 
 
 class UpsampleBlock(nn.Module):

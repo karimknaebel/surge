@@ -1,0 +1,1 @@
+from surge.ops.neighborhood_attention import neighborhood_attention2d
