@@ -10,7 +10,7 @@ dependencies = [
   "torch>=2.12",
   "torchvision",
   "numpy",
-  "utils3d @ git+https://github.com/EasternJournalist/utils3d.git@31d016566e9dbf9f499aa6a96b1f52f6dc63227b",
+  "utils3d @ git+https://github.com/EasternJournalist/utils3d.git@eeafc2786ec603b2e4f491538c8f2583637905f5",
   "opencv-python-headless<5",
   "timm>=1.0.15",
   "einops>=0.8.1",
@@ -51,7 +51,7 @@ surge-eval = "surge.evaluation.cli:main"
 Homepage = "https://github.com/karimknaebel/surge"
 
 [build-system]
-requires = ["uv_build>=0.12.5,<0.13.0"]
+requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.uv]
