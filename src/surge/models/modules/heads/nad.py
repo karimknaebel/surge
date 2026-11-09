@@ -1,4 +1,5 @@
 import math
+import warnings
 from typing import Callable
 
 import torch
@@ -97,6 +98,11 @@ class NAD(nn.Module):
 
     def forward(self, in_features: list[torch.Tensor]):
         first_feature = next(x for x in in_features if x is not None)
+        if (
+            torch.is_autocast_enabled(first_feature.device.type)
+            and torch.get_autocast_dtype(first_feature.device.type) == torch.bfloat16
+        ):
+            _warn_bf16()
         batch_shape = first_feature.shape[:-3]
         in_features = [
             x.reshape(-1, *x.shape[-3:]).permute(0, 2, 3, 1).contiguous()
@@ -217,7 +223,12 @@ class NADStage(nn.Module):
         feature: torch.Tensor | None,
         x: torch.Tensor | None,
     ) -> tuple[torch.Tensor | None, torch.Tensor]:
-        feature = self.input_scale(self.input_projection(feature))
+        device_type = feature.device.type if feature is not None else x.device.type
+        with torch.autocast(device_type=device_type, enabled=False):
+            feature = self.input_projection(
+                feature.float() if feature is not None else None
+            )
+        feature = self.input_scale(feature)
         if x is None:
             x = feature
         elif feature is not None:
@@ -225,11 +236,13 @@ class NADStage(nn.Module):
         rope_embed = self._get_rope_embed(x) if len(self.blocks) > 0 else None
         for block in self.blocks:
             x = block(x, rope_embed)
-        output = (
-            self.output_projection(x) if self.output_projection is not None else None
-        )
-        if self.upsample is not None:
-            x = self.upsample(x)
+        assert x.dtype == torch.float32, "NAD stage output should be fp32"
+        with torch.autocast(device_type=device_type, enabled=False):
+            output = (
+                self.output_projection(x) if self.output_projection is not None else None
+            )
+            if self.upsample is not None:
+                x = self.upsample(x)
         return output, x
 
 
@@ -284,6 +297,7 @@ class NADBlock(nn.Module):
         x: torch.Tensor,
         rope_embed: torch.Tensor | None = None,
     ) -> torch.Tensor:
+        assert x.dtype == torch.float32, "NAD residual stream should be fp32"
         x = x + self.ls1(self.attn(self.norm1(x), rope_embed))
         x = x + self.ls2(self.mlp(self.norm2(x)))
         return x
@@ -422,6 +436,16 @@ class PixelShuffle2d(nn.Module):
         x = self.proj(x).reshape(b, h, w, s, s, -1)
         x = x.permute(0, 1, 3, 2, 4, 5).reshape(b, h * s, w * s, -1)
         return x.permute(0, 3, 1, 2)
+
+
+def _warn_bf16():
+    warnings.warn(
+        "NAD is running under BF16 autocast. "
+        "FP16 is recommended for cleaner results at high resolutions."
+    )
+
+
+torch.compiler.config.reorderable_logging_functions.add(_warn_bf16)
 
 
 def _make_norm_layer(

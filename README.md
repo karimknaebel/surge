@@ -135,7 +135,27 @@ File formats:
 ## 🧩 Neighborhood Attention Decoder (NAD) Module
 
 The [NAD](src/surge/models/modules/heads/nad.py) is implemented as a reusable PyTorch module.
-It is intentionally self-contained, so you can copy it into your project as a single file without pulling in the rest of SurGe.
+To reuse it outside SurGe, copy it together with the [Triton attention operators](src/surge/ops).
+
+```python
+import torch
+from surge.models.modules.heads.nad import NAD
+
+nad = NAD(
+    dim_in=[1024, None, None, None, None],
+    dim_out=[None, None, None, None, 3],
+    embed_dim=[1024, 512, 256, 128, 64],
+    depth=[3, 3, 3, 3, 3],
+).cuda()
+features = [torch.rand(1, 1024, 32, 32, device="cuda"), None, None, None, None]
+
+with torch.autocast("cuda", dtype=torch.float16):
+    output = nad(features)[-1]  # (1, 3, 512, 512)
+```
+
+We recommend FP16: much faster and essentially indistinguishable from FP32 in our tests.
+You will likely need `torch.amp.GradScaler` with FP16 training.
+BF16 also works, but its lower precision can produce slightly less clean results in the highest-resolution stages.
 
 ## 🧩 Point Gradient Matching ($\mathcal{L}_{\mathrm{pgm}}$)
 

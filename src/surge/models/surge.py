@@ -1,4 +1,5 @@
 import itertools
+from contextlib import nullcontext
 from typing import Any, Literal, Sequence
 
 import torch
@@ -56,6 +57,7 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
         image: torch.Tensor,
         num_tokens: int,
         resize_output: bool = True,
+        head_autocast_dtype: torch.dtype | None = None,
     ) -> dict[str, torch.Tensor]:
         batch_size, _, img_h, img_w = image.shape
         aspect_ratio = img_w / img_h
@@ -91,10 +93,16 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
             else:
                 features[level] = torch.concat([features[level], uv], dim=1)
 
-        with torch.autocast(device_type=image.device.type, dtype=torch.float32):
+        # Override head autocast, e.g. FP16 head with a BF16 encoder.
+        with (
+            torch.autocast(image.device.type, dtype=head_autocast_dtype)
+            if head_autocast_dtype is not None
+            else nullcontext()
+        ):
             # Head
             points = self.points_head(features)[-1]
 
+        with torch.autocast(device_type=image.device.type, dtype=torch.float32):
             # Resize
             if resize_output:
                 points = F.interpolate(
