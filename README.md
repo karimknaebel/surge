@@ -6,6 +6,7 @@
 
 ## 📢 News
 
+- 2026-11-09: Replaced NATTEN with [custom Triton and Metal kernels](src/surge/ops) for Neighborhood Attention.
 - 2026-09-25: Accepted to [NeurIPS 2026](https://neurips.cc/Conferences/2026).
 - 2026-08-21: Evaluation code released.
 - 2026-06-01: arXiv v1, inference code, weights, and demo released.
