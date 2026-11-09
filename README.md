@@ -153,7 +153,8 @@ with torch.autocast("cuda", dtype=torch.float16):
     output = nad(features)[-1]  # (1, 3, 512, 512)
 ```
 
-We recommend FP16: much faster and essentially indistinguishable from FP32 in our tests.
+We recommend FP16 during training.
+It is much faster and we saw no degradation compared to FP32 in our tests.
 You will likely need `torch.amp.GradScaler` with FP16 training.
 BF16 also works, but its lower precision can produce slightly less clean results in the highest-resolution stages.
 
