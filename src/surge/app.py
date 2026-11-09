@@ -56,7 +56,7 @@ EXAMPLES = [
     for path in sorted(EXAMPLE_DIR.iterdir() if EXAMPLE_DIR.exists() else [])
     if path.suffix.lower() in {".jpg", ".jpeg", ".png"}
 ]
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.accelerator.current_accelerator() or torch.device("cpu")
 MODEL = SurGe.from_pretrained(DEFAULT_CHECKPOINT).eval().to(DEVICE)
 MESH_VIEWER_CSS = """
 #mesh-viewer .model3D {

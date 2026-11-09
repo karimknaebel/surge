@@ -102,7 +102,8 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
             # Head
             points = self.points_head(features)[-1]
 
-        with torch.autocast(device_type=image.device.type, dtype=torch.float32):
+        assert points.dtype == torch.float32
+        with torch.autocast(device_type=image.device.type, enabled=False):
             # Resize
             if resize_output:
                 points = F.interpolate(
@@ -160,7 +161,8 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
         output = self(image, num_tokens=num_tokens, resize_output=resize_output)
         points = output["points"]
 
-        with torch.autocast(device_type=device.type, dtype=torch.float32):
+        assert points.dtype == torch.float32
+        with torch.autocast(device_type=device.type, enabled=False):
             # Convert affine point map to camera-space. Recover depth and intrinsics from point map.
             # NOTE: Focal here is the focal length relative to half the image diagonal
             if fov_x is None:
@@ -182,9 +184,10 @@ class SurGe(nn.Module, PyTorchModelHubMixin):
 
             # If projection constraint is forced, recompute the point map using the actual depth map & intrinsics
             if force_projection:
+                projection_dtype = torch.float32 if device.type == "mps" else torch.float64
                 points = utils3d.pt.depth_map_to_point_map(
-                    depth.double(),
-                    intrinsics=intrinsics.double(),
+                    depth.to(projection_dtype),
+                    intrinsics=intrinsics.to(projection_dtype),
                 ).to(points.dtype)
 
         return {"points": points, "depth": depth, "intrinsics": intrinsics}

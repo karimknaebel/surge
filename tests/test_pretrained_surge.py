@@ -10,16 +10,32 @@ def test_pretrained(model_name: str):
 
 
 @pytest.mark.parametrize("model_name", ["karimknaebel/surge-large"])
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA")
-def test_infer(model_name: str):
-    model = SurGe.from_pretrained(model_name, strict=True).eval().cuda()
+@pytest.mark.parametrize(
+    "device",
+    [
+        pytest.param(
+            "cuda",
+            marks=pytest.mark.skipif(
+                not torch.cuda.is_available(), reason="requires CUDA"
+            ),
+        ),
+        pytest.param(
+            "mps",
+            marks=pytest.mark.skipif(
+                not torch.backends.mps.is_available(), reason="requires MPS"
+            ),
+        ),
+    ],
+)
+def test_infer(model_name: str, device: str):
+    model = SurGe.from_pretrained(model_name, strict=True).eval().to(device)
     y, x = torch.meshgrid(torch.arange(512), torch.arange(512), indexing="ij")
     image = torch.stack((x / 511, y / 511, ((x // 64 + y // 64) % 2).float()))[None]
 
     out = model.infer(image, num_tokens="min")
     assert out["points"].shape == (1, 512, 512, 3)
     assert torch.isfinite(out["points"]).all()
-    indices = torch.linspace(0, 511, 8, device="cuda").round().long()
+    indices = torch.linspace(0, 511, 8, device=device).round().long()
 
     # Torch 2.11 / NATTEN reference, sampled on an RTX 3090.
     # fmt: off
@@ -34,7 +50,7 @@ def test_infer(model_name: str):
             [[-0.374009, 0.160289, 0.700549], [-0.267487, 0.160492, 0.701435], [-0.160563, 0.160563, 0.701746], [-0.053495, 0.160486, 0.701409], [0.053504, 0.160511, 0.701520], [0.160635, 0.160635, 0.702058], [0.267932, 0.160759, 0.702604], [0.375593, 0.160968, 0.703517]],
             [[-0.373384, 0.266703, 0.699380], [-0.267246, 0.267246, 0.700805], [-0.160537, 0.267561, 0.701630], [-0.053488, 0.267438, 0.701308], [0.053493, 0.267465, 0.701378], [0.160645, 0.267742, 0.702106], [0.268097, 0.268097, 0.703036], [0.375483, 0.268202, 0.703312]],
             [[-0.372103, 0.372103, 0.696980], [-0.266436, 0.373011, 0.698681], [-0.160289, 0.374007, 0.700547], [-0.053385, 0.373698, 0.699967], [0.053441, 0.374088, 0.700698], [0.160426, 0.374327, 0.701145], [0.267689, 0.374765, 0.701967], [0.374636, 0.374636, 0.701725]],
-        ], device="cuda"),
+        ], device=device),
         rtol=1e-3,
         atol=1e-5,
     )

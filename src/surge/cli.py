@@ -177,8 +177,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--device",
-        default="cuda",
-        help='Torch device, for example "cuda", "cuda:0", or "cpu".',
+        help='Torch device, for example "cuda", "cuda:0", or "mps". Defaults to the PyTorch build\'s accelerator, or CPU.',
     )
     parser.add_argument(
         "--fov-x",
@@ -325,6 +324,11 @@ def setup_rerun(args: argparse.Namespace) -> None:
 
 def main() -> None:
     args = parse_args()
+    device = (
+        torch.device(args.device)
+        if args.device is not None
+        else torch.accelerator.current_accelerator() or torch.device("cpu")
+    )
     args.rerun = wants_rerun(args)
     if not any(
         [args.save_maps, args.save_glb, args.save_ply, args.show_mesh, args.rerun]
@@ -348,7 +352,6 @@ def main() -> None:
             static=True,
         )
 
-    device = torch.device(args.device)
     model = SurGe.from_pretrained(args.checkpoint).eval().to(device)
 
     for index, image_path in enumerate(

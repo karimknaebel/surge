@@ -135,7 +135,7 @@ File formats:
 ## 🧩 Neighborhood Attention Decoder (NAD) Module
 
 The [NAD](src/surge/models/modules/heads/nad.py) is implemented as a reusable PyTorch module.
-To reuse it outside SurGe, copy it together with the [Triton attention operators](src/surge/ops).
+To reuse it outside SurGe, copy it together with the [attention operators](src/surge/ops).
 
 ```python
 import torch
