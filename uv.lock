@@ -2022,7 +2022,7 @@ cli = [
 ]
 eval = [
     { name = "moge" },
-    { name = "tqdm" },
+    { name = "rich" },
 ]
 
 [package.dev-dependencies]
@@ -2044,6 +2044,7 @@ requires-dist = [
     { name = "opencv-python-headless", specifier = "<5" },
     { name = "pyglet", marker = "extra == 'cli'", specifier = "<2" },
     { name = "rerun-sdk", marker = "extra == 'cli'" },
+    { name = "rich", marker = "extra == 'eval'" },
     { name = "spaces", marker = "extra == 'app'" },
     { name = "specbuild", specifier = ">=0.1.0,<0.2.0" },
     { name = "timm", specifier = ">=1.0.15" },
@@ -2052,7 +2053,6 @@ requires-dist = [
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
     { name = "torchvision", marker = "sys_platform == 'linux' or sys_platform == 'win32'", index = "https://download.pytorch.org/whl/cu132" },
     { name = "tqdm", marker = "extra == 'cli'" },
-    { name = "tqdm", marker = "extra == 'eval'" },
     { name = "trimesh", marker = "extra == 'app'" },
     { name = "trimesh", marker = "extra == 'cli'" },
     { name = "utils3d", git = "https://github.com/EasternJournalist/utils3d.git?rev=31d016566e9dbf9f499aa6a96b1f52f6dc63227b" },

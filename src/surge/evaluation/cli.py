@@ -1,17 +1,20 @@
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Literal
 
 import torch
 from moge.test.dataloader import EvalDataLoaderPipeline
 from moge.utils.tools import key_average
-from tqdm import tqdm
 
 from surge import SurGe
 from surge.inference import DEFAULT_CHECKPOINT
 
+from .metadata import collect_metadata
 from .metrics import compute_metrics
+from .progress import EvaluationProgress
 
 
 def _parse_tokens(value: str) -> int | Literal["min", "max"]:
@@ -52,7 +55,10 @@ def parse_args() -> argparse.Namespace:
         default="max",
         help='Inference token count, or "min"/"max".',
     )
-    parser.add_argument("--device", default="cuda", help="Torch inference device.")
+    parser.add_argument(
+        "--device",
+        help="Torch inference device. Defaults to the PyTorch build's accelerator, or CPU.",
+    )
     parser.add_argument(
         "--fp16", action="store_true", help="Use float16 autocast for inference."
     )
@@ -86,45 +92,63 @@ def evaluate(
     fp16: bool = False,
 ) -> dict:
     device = next(model.parameters()).device
+    meta = collect_metadata(device)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     all_metrics = {}
-    for benchmark_name, raw_config in tqdm(config.items(), desc="Benchmarks"):
-        benchmark_config = raw_config.copy()
-        has_clean_normal = benchmark_config.pop("has_clean_normal", False)
-        metrics = []
-        with (
-            EvalDataLoaderPipeline(**benchmark_config) as data,
-            tqdm(total=len(data), desc=benchmark_name, leave=False) as progress,
-        ):
-            for index in range(len(data)):
-                sample = {
-                    key: value.to(device) if isinstance(value, torch.Tensor) else value
-                    for key, value in data.get().items()
-                }
-                sample["has_clean_normal"] = has_clean_normal
-                metrics.append(
-                    compute_metrics(
-                        _prediction(model, sample["image"], num_tokens, fp16), sample
-                    )
-                )
-                if index % 100 == 0 or index == len(data) - 1:
-                    output_path.write_text(
-                        json.dumps(
-                            {**all_metrics, benchmark_name: key_average(metrics)},
-                            indent=2,
+
+    def write_output():
+        output_path.write_text(
+            json.dumps(all_metrics | {"_meta": meta}, indent=2) + "\n"
+        )
+
+    write_output()
+    with EvaluationProgress(len(config)) as progress:
+        for benchmark_name, raw_config in config.items():
+            benchmark_config = raw_config.copy()
+            has_clean_normal = benchmark_config.pop("has_clean_normal", False)
+            metrics = []
+            with progress.dataset(benchmark_name) as task:
+                with EvalDataLoaderPipeline(**benchmark_config) as data:
+                    progress.start_samples(task, len(data))
+                    for _ in range(len(data)):
+                        sample = {
+                            key: value.to(device)
+                            if isinstance(value, torch.Tensor)
+                            else value
+                            for key, value in data.get().items()
+                        }
+                        sample["has_clean_normal"] = has_clean_normal
+                        if device.type != "cpu":
+                            torch.accelerator.synchronize(device)
+                        start = perf_counter()
+                        prediction = _prediction(
+                            model, sample["image"], num_tokens, fp16
                         )
-                        + "\n"
-                    )
-                progress.update()
-        all_metrics[benchmark_name] = key_average(metrics)
-    output_path.write_text(json.dumps(all_metrics, indent=2) + "\n")
+                        if device.type != "cpu":
+                            torch.accelerator.synchronize(device)
+                        inference_s = perf_counter() - start
+                        sample_metrics = compute_metrics(prediction, sample)
+                        sample_metrics["runtime"] = {"inference_s": inference_s}
+                        metrics.append(sample_metrics)
+                        progress.advance_sample(task)
+                all_metrics[benchmark_name] = key_average(metrics)
+                write_output()
+        meta["finished_at"] = (
+            datetime.now().astimezone().replace(microsecond=0).isoformat()
+        )
+        write_output()
     return all_metrics
 
 
 def main() -> None:
     args = parse_args()
     config = _load_config(args.config)
-    model = SurGe.from_pretrained(args.checkpoint, strict=True).eval().to(args.device)
+    device = (
+        torch.device(args.device)
+        if args.device is not None
+        else torch.accelerator.current_accelerator() or torch.device("cpu")
+    )
+    model = SurGe.from_pretrained(args.checkpoint, strict=True).eval().to(device)
     evaluate(model, config, args.output, args.tokens, args.fp16)
 
 
