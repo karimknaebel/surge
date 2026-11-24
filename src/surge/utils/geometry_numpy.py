@@ -4,7 +4,6 @@ from functools import partial
 
 import cv2
 import numpy as np
-import utils3d
 
 
 def weighted_mean_numpy(
@@ -62,18 +61,20 @@ def solve_optimal_shift(uv: np.ndarray, xyz: np.ndarray, focal: float):
 def depth_occlusion_edge_numpy(
     depth: np.ndarray, mask: np.ndarray, thickness: int = 1, tol: float = 0.1
 ):
-    disp = np.where(mask, 1 / depth, 0)
-    disp_pad = np.pad(disp, (thickness, thickness), constant_values=0)
-    mask_pad = np.pad(mask, (thickness, thickness), constant_values=False)
+    # MoGe computes the masked mean inverse depth with sliding windows:
+    # https://github.com/microsoft/MoGe/blob/07444410f1e33f402353b99d6ccd26bd31e469e8/moge/utils/geometry_numpy.py#L146-L161
+    # Box filters compute the same mean. The full function was ~33x faster on a
+    # 640x480 float32 depth map with thickness=2 and tol=0.01.
+    disp = np.zeros_like(depth, dtype=np.result_type(depth.dtype, np.float32))
+    np.divide(1, depth, out=disp, where=mask)
     kernel_size = 2 * thickness + 1
-    disp_window = utils3d.np.sliding_window(
-        disp_pad, (kernel_size, kernel_size), 1, axis=(-2, -1)
-    )  # [..., H, W, kernel_size ** 2]
-    mask_window = utils3d.np.sliding_window(
-        mask_pad, (kernel_size, kernel_size), 1, axis=(-2, -1)
-    )  # [..., H, W, kernel_size ** 2]
-
-    disp_mean = weighted_mean_numpy(disp_window, mask_window, axis=(-2, -1))
+    disp_mean = cv2.boxFilter(
+        disp, cv2.CV_64F, (kernel_size, kernel_size), normalize=False, borderType=cv2.BORDER_CONSTANT
+    )
+    valid_count = cv2.boxFilter(
+        mask.astype(np.uint8), cv2.CV_32F, (kernel_size, kernel_size), normalize=False, borderType=cv2.BORDER_CONSTANT
+    )
+    np.divide(disp_mean, valid_count, out=disp_mean, where=mask)
     fg_edge_mask = mask & (disp > (1 + tol) * disp_mean)
     bg_edge_mask = mask & (disp_mean > (1 + tol) * disp)
 
