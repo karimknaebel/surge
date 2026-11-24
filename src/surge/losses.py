@@ -21,7 +21,7 @@ def point_gradient_matching(
     pred_points: torch.Tensor,
     gt_points: torch.Tensor,
     mask: torch.Tensor,
-    edge_mask: torch.Tensor | None = None,
+    edge_mask: torch.Tensor | None = None,  # Highly recommended. See depth_occlusion_edge_numpy example below.
 ) -> torch.Tensor:
     r"""Compute point gradient matching loss :math:`\mathcal{L}_{\mathrm{pgm}}`.
 
@@ -30,6 +30,15 @@ def point_gradient_matching(
     ``mask``: ``(..., H, W)``
     ``edge_mask``: ``(..., H, W)``, occlusion boundaries excluded from the loss
     Returns: ``(...)``
+
+    Example::
+
+        # Inside dataloader
+        mask = np.isfinite(depth)
+        edge_mask = depth_occlusion_edge_numpy(depth, mask=mask, thickness=2, tol=0.01)
+
+        # In the training step, after collation
+        loss = point_gradient_matching(pred_points, gt_points, mask, edge_mask=edge_mask)
     """
     gt_points = torch.where(mask[..., None], gt_points, 1)
 
