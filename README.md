@@ -22,7 +22,7 @@ git clone https://github.com/karimknaebel/surge
 cd surge
 ```
 
-Then install SurGe with the Inference CLI, Gradio app, and evaluation dependencies:
+Then install SurGe with the inference CLI and evaluation dependencies:
 
 ```bash
 uv sync --all-extras
@@ -31,7 +31,7 @@ uv sync --all-extras
 This creates a virtual environment in `.venv/`.
 Run commands with `uv run` (e.g., `uv run surge-infer ...`), or just activate it as usual with `source .venv/bin/activate`.
 
-Alternatively, with pip: `pip install -e ".[cli,app,eval]"`
+Alternatively, with pip: `pip install -e ".[cli,eval]"`
 
 ### As a library
 
@@ -84,13 +84,7 @@ For interactive viewing, use `--show-mesh` to open the reconstructed mesh with t
 
 ### 🖥️ Gradio App
 
-Launch the local demo app:
-
-```
-uv run surge-app
-```
-
-The app lets you upload an image, adjust the token budget and mesh cleanup settings, view the reconstructed mesh, and download the generated maps and geometry.
+Try the [hosted demo](https://huggingface.co/spaces/karimknaebel/surge) or [run the demo with your local SurGe checkout](https://huggingface.co/spaces/karimknaebel/surge/blob/main/README.md#use-a-local-surge-checkout).
 
 ### 📊 Evaluation
 

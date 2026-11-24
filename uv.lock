@@ -2288,23 +2288,6 @@ wheels = [
 ]
 
 [[package]]
-name = "spaces"
-version = "0.51.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "gradio" },
-    { name = "httpx" },
-    { name = "packaging" },
-    { name = "pydantic" },
-    { name = "requests" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ad/9c/8d72b1736fdb27be10bb3596f0bcbd1a6d0ec66e795d3e7ca56160e76ab7/spaces-0.51.3.tar.gz", hash = "sha256:affe3e60a114f9d2cc8394526460f82acaac4351d5982e8741b36dace736f8ae", size = 88743, upload-time = "2026-08-31T13:19:25.768Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/b3/f6c0dfa766e0fc5ae66466235c13be580e543d8d2d9023f678ba5859adca/spaces-0.51.3-py3-none-any.whl", hash = "sha256:e588ce6b4301c566139d84bafb1c30b555967ce4ee2792be659ee5643f0f7eb1", size = 111776, upload-time = "2026-08-31T13:19:27.829Z" },
-]
-
-[[package]]
 name = "specbuild"
 version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2345,13 +2328,6 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
-app = [
-    { name = "gradio" },
-    { name = "matplotlib" },
-    { name = "onnxruntime" },
-    { name = "spaces" },
-    { name = "trimesh" },
-]
 cli = [
     { name = "matplotlib" },
     { name = "onnxruntime" },
@@ -2373,19 +2349,15 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "einops", specifier = ">=0.8.1" },
-    { name = "gradio", marker = "extra == 'app'" },
     { name = "huggingface-hub" },
-    { name = "matplotlib", marker = "extra == 'app'" },
     { name = "matplotlib", marker = "extra == 'cli'" },
     { name = "moge", marker = "extra == 'eval'", git = "https://github.com/microsoft/MoGe.git?rev=74fbce054ebed49800de42d0ad0e83495065719a" },
     { name = "numpy" },
-    { name = "onnxruntime", marker = "extra == 'app'" },
     { name = "onnxruntime", marker = "extra == 'cli'" },
     { name = "opencv-python-headless", specifier = "<5" },
     { name = "pyglet", marker = "extra == 'cli'", specifier = "<2" },
     { name = "rerun-sdk", marker = "extra == 'cli'" },
     { name = "rich", marker = "extra == 'eval'" },
-    { name = "spaces", marker = "extra == 'app'" },
     { name = "specbuild", specifier = ">=0.1.0,<0.2.0" },
     { name = "timm", specifier = ">=1.0.15" },
     { name = "torch", marker = "sys_platform != 'linux' and sys_platform != 'win32'", specifier = ">=2.12" },
@@ -2393,11 +2365,10 @@ requires-dist = [
     { name = "torchvision", marker = "sys_platform != 'linux' and sys_platform != 'win32'" },
     { name = "torchvision", marker = "sys_platform == 'linux' or sys_platform == 'win32'", index = "https://download.pytorch.org/whl/cu132" },
     { name = "tqdm", marker = "extra == 'cli'" },
-    { name = "trimesh", marker = "extra == 'app'" },
     { name = "trimesh", marker = "extra == 'cli'" },
     { name = "utils3d", git = "https://github.com/EasternJournalist/utils3d.git?rev=eeafc2786ec603b2e4f491538c8f2583637905f5" },
 ]
-provides-extras = ["cli", "app", "eval"]
+provides-extras = ["cli", "eval"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.3.5" }]

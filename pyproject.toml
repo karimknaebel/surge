@@ -27,13 +27,6 @@ cli = [
   "onnxruntime",
   "tqdm",
 ]
-app = [
-  "gradio",
-  "matplotlib",
-  "trimesh",
-  "onnxruntime",
-  "spaces",
-]
 eval = [
   "moge @ git+https://github.com/microsoft/MoGe.git@74fbce054ebed49800de42d0ad0e83495065719a",
   "rich",
@@ -44,7 +37,6 @@ dev = ["pytest>=8.3.5"]
 
 [project.scripts]
 surge-infer = "surge.cli:main"
-surge-app = "surge.app:main"
 surge-eval = "surge.evaluation.cli:main"
 
 [project.urls]
